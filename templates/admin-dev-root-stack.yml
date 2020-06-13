@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS CloudFormation Root stack
+Description: AWS CloudFormation Root stack for Admin
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
