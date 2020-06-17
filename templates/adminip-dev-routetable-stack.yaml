@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Nested Network Stack for Route Tables, Routes and Associations
+Parameters:
+    VPCID:
+      Description: VPCStack VPC ID
+      Type: String
+    EdgeSubnet1ID:
+      Description: Edge SUbnet 1 ID
+      Type: String
+    OAMSubnet1ID:
+      Description: OAM SUbnet 1 ID
+      Type: String
+Resources:
+  EdgeRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-edge-e-1-rtt
+  EdgeRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Retain
+    Properties:
+      RouteTableId: !Ref EdgeRouteTable1
+      SubnetId: !Ref EdgeSubnet1ID
+  OAMRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Retain
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvoam-o-1-rtt
+  OAMRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Retain
+    Properties:
+      RouteTableId: !Ref OAMRouteTable1
+      SubnetId: !Ref OAMSubnet1ID
+Outputs:
+  EdgeRouteTable1ID:
+    Value:
+      Ref: EdgeRouteTable1
+    Description: Edge Route Table 1 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-EdgeRouteTable1"
+  OAMRouteTable1ID:
+    Value:
+      Ref: OAMRouteTable1
+    Description: OAM Route Table 1 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-OAMRouteTable1"
