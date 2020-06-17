@@ -11,7 +11,6 @@ Resources:
   VPCStack:
     Type: AWS::EC2::VPC
     DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
     Properties:
       CidrBlock:
         Ref: VPCCIDR
