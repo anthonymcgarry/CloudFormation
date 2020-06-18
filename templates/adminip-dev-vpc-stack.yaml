@@ -1,5 +1,15 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: AWS CloudFormation Nested Network Stack for VPC Creation
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: VPC Configuration
+        Parameters:
+          - VPCCIDR
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR
 Parameters:
   VPCCIDR:
     AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
@@ -28,4 +38,4 @@ Outputs:
     Description: VPC ID
     Export:
       Name:
-        Fn::Sub: "${AWS::StackName}-VPCStack"
+        Fn::Sub: "${AWS::StackName}-VPCID"

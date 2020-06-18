@@ -5,40 +5,40 @@ Parameters:
       Description: VPCStack VPC ID
       Type: String
     EdgeSubnet1ID:
-      Description: Edge SUbnet 1 ID
+      Description: Edge Subnet 1 ID
       Type: String
     EdgeSubnet2ID:
-      Description: Edge SUbnet 2 ID
+      Description: Edge Subnet 2 ID
       Type: String
     EdgeSubnet3ID:
-      Description: Edge SUbnet 3 ID
+      Description: Edge Subnet 3 ID
       Type: String
     OAMSubnet1ID:
-      Description: OAM SUbnet 1 ID
+      Description: OAM Subnet 1 ID
       Type: String
     OAMSubnet2ID:
-      Description: OAM SUbnet 2 ID
+      Description: OAM Subnet 2 ID
       Type: String
     OAMSubnet3ID:
-      Description: OAM SUbnet 3 ID
+      Description: OAM Subnet 3 ID
       Type: String
     AppSubnet1ID:
-      Description: App SUbnet 1 ID
+      Description: App Subnet 1 ID
       Type: String
     AppSubnet2ID:
-      Description: App SUbnet 2 ID
+      Description: App Subnet 2 ID
       Type: String
     AppSubnet3ID:
-      Description: App SUbnet 3 ID
+      Description: App Subnet 3 ID
       Type: String
     DBSubnet1ID:
-      Description: DB SUbnet 1 ID
+      Description: DB Subnet 1 ID
       Type: String
     DBSubnet2ID:
-      Description: DB SUbnet 2 ID
+      Description: DB Subnet 2 ID
       Type: String
     DBSubnet3ID:
-      Description: DB SUbnet 3 ID
+      Description: DB Subnet 3 ID
       Type: String
 Resources:
   EdgeRouteTable1:
@@ -318,4 +318,3 @@ Outputs:
     Export:
       Name:
         Fn::Sub: "${AWS::StackName}-DBRouteTable3"
-

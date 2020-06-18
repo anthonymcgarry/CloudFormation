@@ -1,5 +1,48 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation Nested Network Stack for Subnets
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Subnet Configuration
+        Parameters:
+          - EdgeSubnet1CIDR
+          - EdgeSubnet2CIDR
+          - EdgeSubnet3CIDR
+          - OAMSubnet1CIDR
+          - OAMSubnet2CIDR
+          - OAMSubnet3CIDR
+          - AppSubnet1CIDR
+          - AppSubnet2CIDR
+          - AppSubnet3CIDR
+          - DBSubnet1CIDR
+          - DBSubnet2CIDR
+          - DBSubnet3CIDR
+    ParameterLabels:
+      EdgeSubnet1CIDR:
+        default: Edge Subnet 1
+      EdgeSubnet2CIDR:
+        default: Edge Subnet 2
+      EdgeSubnet3CIDR:
+        default: Edge Subnet 3
+      OAMSubnet1CIDR:
+        default: OAM Subnet 1
+      OAMSubnet2CIDR:
+        default: OAM Subnet 2
+      OAMSubnet3CIDR:
+        default: OAM Subnet 3
+      AppSubnet1CIDR:
+        default: App Subnet 1
+      AppSubnet2CIDR:
+        default: App Subnet 2
+      AppSubnet3CIDR:
+        default: App Subnet 3
+      DBSubnet1CIDR:
+        default: DB Subnet 1
+      DBSubnet2CIDR:
+        default: DB Subnet 2
+      DBSubnet3CIDR:
+        default: DB Subnet 3
 Parameters:
   VPCID:
     Description: VPCStack VPC ID
