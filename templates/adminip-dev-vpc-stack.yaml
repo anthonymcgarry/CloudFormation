@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS CloudFormation Nested Network Stack for VPC Creation
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: VPC Configuration
+        Parameters:
+          - VPCCIDR
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR
+Parameters:
+  VPCCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.0.0/16
+    Description: CIDR block for the VPC
+    Type: String
+Resources:
+  VPCStack:
+    Type: AWS::EC2::VPC
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      CidrBlock:
+        Ref: VPCCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: adminip-dev-ip-vpc
+Outputs:
+  VPCID:
+    Value:
+      Ref: VPCStack
+    Description: VPC ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-VPCID"
