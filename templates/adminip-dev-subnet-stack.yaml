@@ -1,25 +1,86 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation Nested Network Stack for Subnets
 Parameters:
+  VPCID:
+    Description: VPCStack VPC ID
+    Type: String
   EdgeSubnet1CIDR:
-    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
     Default: 10.97.63.0/27
-    Description: CIDR block for Edge Subnet 1
+    Description: CIDR block for edge subnet 1 located in Availability Zone 1
+    Type: String
+  EdgeSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.127.0/27
+    Description: CIDR block for edge subnet 2 located in Availability Zone 2
+    Type: String
+  EdgeSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.191.0/27
+    Description: CIDR block for edge subnet 3 located in Availability Zone 3
     Type: String
   OAMSubnet1CIDR:
     AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
     Default: 10.97.32.0/21
-    Description: CIDR block for OAM Subnet 1
+    Description: CIDR block for OAM Subnet 1 located in Availability Zone 1
     Type: String
-  VPCID:
-    Description: VPCStack VPC ID
+  OAMSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.96.0/21
+    Description: CIDR block for OAM Subnet 2 located in Availability Zone 2
+    Type: String
+  OAMSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.160.0/21
+    Description: CIDR block for OAM Subnet 3 located in Availability Zone 3
+    Type: String
+  AppSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.8.0/24
+    Description: CIDR block for App Subnet 1 located in Availability Zone 1
+    Type: String
+  AppSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.72.0/24
+    Description: CIDR block for App Subnet 2 located in Availability Zone 2
+    Type: String
+  AppSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.136.0/24
+    Description: CIDR block for App Subnet 3 located in Availability Zone 3
+    Type: String
+  DBSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.16.0/24
+    Description: CIDR block for DB Subnet 1 located in Availability Zone 1
+    Type: String
+  DBSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.80.0/24
+    Description: CIDR block for DB Subnet 2 located in Availability Zone 2
+    Type: String
+  DBSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.144.0/24
+    Description: CIDR block for DB Subnet 3 located in Availability Zone 3
     Type: String
 Resources:
   EdgeSubnet1:
     Type: AWS::EC2::Subnet
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       VpcId: !Ref 'VPCID'
       CidrBlock: !Ref 'EdgeSubnet1CIDR'
@@ -27,9 +88,32 @@ Resources:
       Tags:
       - Key: Name
         Value: adminip-dev-edge-e-1-pri-net
+  EdgeSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'EdgeSubnet2CIDR'
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-edge-e-2-pri-net
+  EdgeSubnet3:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'EdgeSubnet3CIDR'
+      AvailabilityZone: !Select [ 2, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-edge-e-3-pri-net
   OAMSubnet1:
     Type: AWS::EC2::Subnet
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       VpcId: !Ref 'VPCID'
       CidrBlock: !Ref 'OAMSubnet1CIDR'
@@ -37,6 +121,94 @@ Resources:
       Tags:
       - Key: Name
         Value: adminip-dev-srvoam-o-1-pri-net
+  OAMSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'OAMSubnet2CIDR'
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvoam-o-2-pri-net
+  OAMSubnet3:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'OAMSubnet3CIDR'
+      AvailabilityZone: !Select [ 2, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvoam-o-3-pri-net
+  AppSubnet1:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'AppSubnet1CIDR'
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvapp-t-1-pri-net
+  AppSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'AppSubnet2CIDR'
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvapp-t-2-pri-net
+  AppSubnet3:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'AppSubnet3CIDR'
+      AvailabilityZone: !Select [ 2, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvapp-t-3-pri-net
+  DBSubnet1:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'DBSubnet1CIDR'
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvdb-t-1-pri-net
+  DBSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'DBSubnet2CIDR'
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvdb-t-2-pri-net
+  DBSubnet3:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'DBSubnet3CIDR'
+      AvailabilityZone: !Select [ 2, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-srvdb-t-3-pri-net
 Outputs:
   EdgeSubnet1ID:
     Value:
@@ -45,6 +217,20 @@ Outputs:
     Export:
       Name:
         Fn::Sub: "${AWS::StackName}-EdgeSubnet1"
+  EdgeSubnet2ID:
+    Value:
+      Ref: EdgeSubnet2
+    Description: Edge Subnet 2 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-EdgeSubnet2"
+  EdgeSubnet3ID:
+    Value:
+      Ref: EdgeSubnet3
+    Description: Edge Subnet 3 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-EdgeSubnet3"
   OAMSubnet1ID:
     Value:
       Ref: OAMSubnet1
@@ -52,3 +238,59 @@ Outputs:
     Export:
       Name:
         Fn::Sub: "${AWS::StackName}-OAMSubnet1"
+  OAMSubnet2ID:
+    Value:
+      Ref: OAMSubnet2
+    Description: OAM Subnet 2 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-OAMSubnet2"
+  OAMSubnet3ID:
+    Value:
+      Ref: OAMSubnet3
+    Description: OAM Subnet 3 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-OAMSubnet3"
+  AppSubnet1ID:
+    Value:
+      Ref: AppSubnet1
+    Description: App Subnet 1 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-AppSubnet1"
+  AppSubnet2ID:
+    Value:
+      Ref: AppSubnet2
+    Description: App Subnet 2 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-AppSubnet2"
+  AppSubnet3ID:
+    Value:
+      Ref: AppSubnet3
+    Description: App Subnet 3 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-AppSubnet3"
+  DBSubnet1ID:
+    Value:
+      Ref: DBSubnet1
+    Description: DB Subnet 1 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-DBSubnet1"
+  DBSubnet2ID:
+    Value:
+      Ref: DBSubnet2
+    Description: DB Subnet 2 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-DBSubnet2"
+  DBSubnet3ID:
+    Value:
+      Ref: DBSubnet3
+    Description: DB Subnet 3 ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-DBSubnet3"

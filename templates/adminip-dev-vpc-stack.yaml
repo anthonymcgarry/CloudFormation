@@ -10,7 +10,8 @@ Parameters:
 Resources:
   VPCStack:
     Type: AWS::EC2::VPC
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock:
         Ref: VPCCIDR

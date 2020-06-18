@@ -8,13 +8,44 @@ Metadata:
         Parameters:
           - VPCCIDR
           - EdgeSubnet1CIDR
+          - EdgeSubnet2CIDR
+          - EdgeSubnet3CIDR
+          - OAMSubnet1CIDR
+          - OAMSubnet2CIDR
+          - OAMSubnet3CIDR
+          - AppSubnet1CIDR
+          - AppSubnet2CIDR
+          - AppSubnet3CIDR
+          - DBSubnet1CIDR
+          - DBSubnet2CIDR
+          - DBSubnet3CIDR
     ParameterLabels:
       VPCCIDR:
         default: VPC CIDR
       EdgeSubnet1CIDR:
         default: Edge Subnet 1
+      EdgeSubnet2CIDR:
+        default: Edge Subnet 2
+      EdgeSubnet3CIDR:
+        default: Edge Subnet 3
       OAMSubnet1CIDR:
         default: OAM Subnet 1
+      OAMSubnet2CIDR:
+        default: OAM Subnet 2
+      OAMSubnet3CIDR:
+        default: OAM Subnet 3
+      AppSubnet1CIDR:
+        default: App Subnet 1
+      AppSubnet2CIDR:
+        default: App Subnet 2
+      AppSubnet3CIDR:
+        default: App Subnet 3
+      DBSubnet1CIDR:
+        default: DB Subnet 1
+      DBSubnet2CIDR:
+        default: DB Subnet 2
+      DBSubnet3CIDR:
+        default: DB Subnet 3
 Parameters:
   VPCCIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
@@ -28,11 +59,71 @@ Parameters:
     Default: 10.97.63.0/27
     Description: CIDR block for edge subnet 1 located in Availability Zone 1
     Type: String
+  EdgeSubnet2CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.127.0/27
+    Description: CIDR block for edge subnet 2 located in Availability Zone 2
+    Type: String
+  EdgeSubnet3CIDR:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.191.0/27
+    Description: CIDR block for edge subnet 3 located in Availability Zone 3
+    Type: String
   OAMSubnet1CIDR:
     AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
     Default: 10.97.32.0/21
-    Description: CIDR block for OAM Subnet 1
+    Description: CIDR block for OAM Subnet 1 located in Availability Zone 1
+    Type: String
+  OAMSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.96.0/21
+    Description: CIDR block for OAM Subnet 2 located in Availability Zone 2
+    Type: String
+  OAMSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.160.0/21
+    Description: CIDR block for OAM Subnet 3 located in Availability Zone 3
+    Type: String
+  AppSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.8.0/24
+    Description: CIDR block for App Subnet 1 located in Availability Zone 1
+    Type: String
+  AppSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.72.0/24
+    Description: CIDR block for App Subnet 2 located in Availability Zone 2
+    Type: String
+  AppSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.136.0/24
+    Description: CIDR block for App Subnet 3 located in Availability Zone 3
+    Type: String
+  DBSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.16.0/24
+    Description: CIDR block for DB Subnet 1 located in Availability Zone 1
+    Type: String
+  DBSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.80.0/24
+    Description: CIDR block for DB Subnet 2 located in Availability Zone 2
+    Type: String
+  DBSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.144.0/24
+    Description: CIDR block for DB Subnet 3 located in Availability Zone 3
     Type: String
 Resources:
   VPCStack:
@@ -47,7 +138,17 @@ Resources:
       TemplateURL: https://adminip-dev-cfntemplates-bucket.s3-eu-west-1.amazonaws.com/infrastructure/adminip-dev-subnet-stack.yaml
       Parameters:
         EdgeSubnet1CIDR: !Ref EdgeSubnet1CIDR
+        EdgeSubnet2CIDR: !Ref EdgeSubnet2CIDR
+        EdgeSubnet3CIDR: !Ref EdgeSubnet3CIDR
         OAMSubnet1CIDR: !Ref OAMSubnet1CIDR
+        OAMSubnet2CIDR: !Ref OAMSubnet2CIDR
+        OAMSubnet3CIDR: !Ref OAMSubnet3CIDR
+        AppSubnet1CIDR: !Ref AppSubnet1CIDR
+        AppSubnet2CIDR: !Ref AppSubnet2CIDR
+        AppSubnet3CIDR: !Ref AppSubnet3CIDR
+        DBSubnet1CIDR: !Ref DBSubnet1CIDR
+        DBSubnet2CIDR: !Ref DBSubnet2CIDR
+        DBSubnet3CIDR: !Ref DBSubnet3CIDR
         VPCID: !GetAtt VPCStack.Outputs.VPCID
   RouteTableStack:
     Type: 'AWS::CloudFormation::Stack'
@@ -56,4 +157,14 @@ Resources:
       Parameters:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         EdgeSubnet1ID: !GetAtt SubnetStack.Outputs.EdgeSubnet1ID
+        EdgeSubnet2ID: !GetAtt SubnetStack.Outputs.EdgeSubnet3ID
+        EdgeSubnet3ID: !GetAtt SubnetStack.Outputs.EdgeSubnet3ID
         OAMSubnet1ID: !GetAtt SubnetStack.Outputs.OAMSubnet1ID
+        OAMSubnet2ID: !GetAtt SubnetStack.Outputs.OAMSubnet2ID
+        OAMSubnet3ID: !GetAtt SubnetStack.Outputs.OAMSubnet3ID
+        AppSubnet1ID: !GetAtt SubnetStack.Outputs.AppSubnet1ID
+        AppSubnet2ID: !GetAtt SubnetStack.Outputs.AppSubnet2ID
+        AppSubnet3ID: !GetAtt SubnetStack.Outputs.AppSubnet3ID
+        DBSubnet1ID: !GetAtt SubnetStack.Outputs.DBSubnet1ID
+        DBSubnet2ID: !GetAtt SubnetStack.Outputs.DBSubnet2ID
+        DBSubnet3ID: !GetAtt SubnetStack.Outputs.DBSubnet3ID
