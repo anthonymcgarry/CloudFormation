@@ -254,86 +254,62 @@ Resources:
         Value: adminip-dev-srvdb-t-3-pri-net
 Outputs:
   EdgeSubnet1ID:
-    Value:
-      Ref: EdgeSubnet1
+    Value: !Ref EdgeSubnet1
     Description: Edge Subnet 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeSubnet1"
+      Name: !Sub "${AWS::StackName}-EdgeSubnet1"
   EdgeSubnet2ID:
-    Value:
-      Ref: EdgeSubnet2
+    Value: !Ref EdgeSubnet2
     Description: Edge Subnet 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeSubnet2"
+      Name: !Sub "${AWS::StackName}-EdgeSubnet2"
   EdgeSubnet3ID:
-    Value:
-      Ref: EdgeSubnet3
+    Value: !Ref EdgeSubnet3
     Description: Edge Subnet 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeSubnet3"
+      Name: !Sub "${AWS::StackName}-EdgeSubnet3"
   OAMSubnet1ID:
-    Value:
-      Ref: OAMSubnet1
+    Value: !Ref OAMSubnet1
     Description: OAM Subnet 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMSubnet1"
+      Name: !Sub "${AWS::StackName}-OAMSubnet1"
   OAMSubnet2ID:
-    Value:
-      Ref: OAMSubnet2
+    Value: !Ref OAMSubnet2
     Description: OAM Subnet 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMSubnet2"
+      Name: !Sub "${AWS::StackName}-OAMSubnet2"
   OAMSubnet3ID:
-    Value:
-      Ref: OAMSubnet3
+    Value: !Ref OAMSubnet3
     Description: OAM Subnet 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMSubnet3"
+      Name: !Sub "${AWS::StackName}-OAMSubnet3"
   AppSubnet1ID:
-    Value:
-      Ref: AppSubnet1
+    Value: !Ref AppSubnet1
     Description: App Subnet 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppSubnet1"
+      Name: !Sub "${AWS::StackName}-AppSubnet1"
   AppSubnet2ID:
-    Value:
-      Ref: AppSubnet2
+    Value: !Ref AppSubnet2
     Description: App Subnet 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppSubnet2"
+      Name: !Sub "${AWS::StackName}-AppSubnet2"
   AppSubnet3ID:
-    Value:
-      Ref: AppSubnet3
+    Value: !Ref AppSubnet3
     Description: App Subnet 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppSubnet3"
+      Name: !Sub "${AWS::StackName}-AppSubnet3"
   DBSubnet1ID:
-    Value:
-      Ref: DBSubnet1
+    Value: !Ref DBSubnet1
     Description: DB Subnet 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBSubnet1"
+      Name: !Sub "${AWS::StackName}-DBSubnet1"
   DBSubnet2ID:
-    Value:
-      Ref: DBSubnet2
+    Value: !Ref DBSubnet2
     Description: DB Subnet 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBSubnet2"
+      Name: !Sub "${AWS::StackName}-DBSubnet2"
   DBSubnet3ID:
-    Value:
-      Ref: DBSubnet3
+    Value: !Ref DBSubnet3
     Description: DB Subnet 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBSubnet3"
+      Name: !Sub "${AWS::StackName}-DBSubnet3"

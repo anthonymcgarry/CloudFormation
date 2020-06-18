@@ -23,8 +23,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      CidrBlock:
-        Ref: VPCCIDR
+      CidrBlock: !Ref VPCCIDR
       EnableDnsSupport: true
       EnableDnsHostnames: true
       InstanceTenancy: default
@@ -33,9 +32,7 @@ Resources:
         Value: adminip-dev-ip-vpc
 Outputs:
   VPCID:
-    Value:
-      Ref: VPCStack
+    Value: !Ref VPCStack
     Description: VPC ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-VPCID"
+      Name: !Sub "${AWS::StackName}-VPCID"

@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Network Stack for Transit Gateway
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Transit Gateway Configuration
+        Parameters:
+          - TransitGatewayASN
+    ParameterLabels:
+      TransitGatewayASN:
+        default: Transit Gateway AS Number
+Parameters:
+  TransitGatewayASN:
+    AllowedPattern: ^42000203\d{2}$ # 32 bit ASN range 42000203xx assinged for transit gateways
+    Description: VPCStack VPC ID
+    Type: String
+    Default: "4200020300"
+Resources:
+  TransitGateway20300:
+    Type: AWS::EC2::TransitGateway
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties: 
+      AmazonSideAsn: !Ref TransitGatewayASN
+      AutoAcceptSharedAttachments: "disable"
+      DefaultRouteTableAssociation: "disable"
+      DefaultRouteTablePropagation: "disable"
+      Description: "Primary transit gateway"
+      DnsSupport: "enable"
+      VpnEcmpSupport: "enable"
+      Tags: 
+      - Key: Name
+        Value: adminip-prod-euw1-asn20300-tgw
+  TransitGatewayAtt01:
+    Type: AWS::EC2::TransitGatewayAttachment
+      Properties:
+        SubnetIds: !Ref EdgeSubnet1ID
+        TransitGatewayId: String
+        VpcId: String
+        Tags: 
+        - Key: Name

@@ -203,30 +203,22 @@ Resources:
       NetworkAclId: !Ref 'DBNetworkAcl'
 Outputs:
   EdgeNetworkAclID:
-    Value:
-      Ref: EdgeNetworkAcl
+    Value: !Ref EdgeNetworkAcl
     Description: Edge NACL ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeNetworkAcl"
+      Name: !Sub "${AWS::StackName}-EdgeNetworkAcl"
   OAMNetworkAclID:
-    Value:
-      Ref: OAMNetworkAcl
+    Value: !Ref OAMNetworkAcl
     Description: OAM NACL ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMNetworkAcl"
+      Name: !Sub "${AWS::StackName}-OAMNetworkAcl"
   AppNetworkAclID:
-    Value:
-      Ref: AppNetworkAcl
+    Value: !Ref AppNetworkAcl
     Description: App NACL ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppNetworkAcl"
+      Name: !Sub "${AWS::StackName}-AppNetworkAcl"
   DBNetworkAclID:
-    Value:
-      Ref: DBNetworkAcl
+    Value: !Ref DBNetworkAcl
     Description: DB NACL ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBNetworkAcl"
+      Name: !Sub "${AWS::StackName}-DBNetworkAcl"

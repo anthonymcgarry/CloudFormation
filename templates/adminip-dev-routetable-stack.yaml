@@ -235,86 +235,62 @@ Resources:
       SubnetId: !Ref DBSubnet3ID
 Outputs:
   EdgeRouteTable1ID:
-    Value:
-      Ref: EdgeRouteTable1
+    Value: !Ref EdgeRouteTable1
     Description: Edge Route Table 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeRouteTable1"
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable1"
   EdgeRouteTable2ID:
-    Value:
-      Ref: EdgeRouteTable2
+    Value: !Ref EdgeRouteTable2
     Description: Edge Route Table 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeRouteTable2"
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable2"
   EdgeRouteTable3ID:
-    Value:
-      Ref: EdgeRouteTable3
+    Value: !Ref EdgeRouteTable3
     Description: Edge Route Table 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-EdgeRouteTable3"
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable3"
   OAMRouteTable1ID:
-    Value:
-      Ref: OAMRouteTable1
+    Value: !Ref OAMRouteTable1
     Description: OAM Route Table 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMRouteTable1"
+      Name: !Sub "${AWS::StackName}-OAMRouteTable1"
   OAMRouteTable2ID:
-    Value:
-      Ref: OAMRouteTable2
+    Value: !Ref OAMRouteTable2
     Description: OAM Route Table 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMRouteTable2"
+      Name: !Sub "${AWS::StackName}-OAMRouteTable2"
   OAMRouteTable3ID:
-    Value:
-      Ref: OAMRouteTable3
+    Value: !Ref OAMRouteTable3
     Description: OAM Route Table 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-OAMRouteTable3"
+      Name: !Sub "${AWS::StackName}-OAMRouteTable3"
   AppRouteTable1ID:
-    Value:
-      Ref: AppRouteTable1
+    Value: !Ref AppRouteTable1
     Description: App Route Table 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppRouteTable1"
+      Name: !Sub "${AWS::StackName}-AppRouteTable1"
   AppRouteTable2ID:
-    Value:
-      Ref: AppRouteTable2
+    Value: !Ref AppRouteTable2
     Description: App Route Table 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppRouteTable2"
+      Name: !Sub "${AWS::StackName}-AppRouteTable2"
   AppRouteTable3ID:
-    Value:
-      Ref: AppRouteTable3
+    Value: !Ref AppRouteTable3
     Description: App Route Table 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-AppRouteTable3"
+      Name: !Sub "${AWS::StackName}-AppRouteTable3"
   DBRouteTable1ID:
-    Value:
-      Ref: DBRouteTable1
+    Value: !Ref DBRouteTable1
     Description: DB Route Table 1 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBRouteTable1"
+      Name: !Sub "${AWS::StackName}-DBRouteTable1"
   DBRouteTable2ID:
-    Value:
-      Ref: DBRouteTable2
+    Value: !Ref DBRouteTable2
     Description: DB Route Table 2 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBRouteTable2"
+      Name: !Sub "${AWS::StackName}-DBRouteTable2"
   DBRouteTable3ID:
-    Value:
-      Ref: DBRouteTable3
+    Value: !Ref DBRouteTable3
     Description: DB Route Table 3 ID
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-DBRouteTable3"
+      Name: !Sub "${AWS::StackName}-DBRouteTable3"
