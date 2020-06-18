@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create S3 Buckets and output their URL to SSM for furthur use
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: S3 Bucket Creation
+        Parameters:
+          - CfnS3BucketName
+    ParameterLabels:
+      CfnS3BucketName:
+        default: S3 bucket for use with CFN
+Parameters:
+  CfnS3BucketName:
+    Default: adminip-dev-cfntemplates-bucket
+    Description: The S3 bucket name
+    Type: String
+Resources:
+  CFNS3BucketStack:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref CfnS3BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: BucketOwnerFullControl
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+      - Key: Name
+        Value: adminip-dev-cfntemplates-bucket
+      - Key: Description
+        Value: Object storage for CFN Templates
+      VersioningConfiguration:
+        Status: Enabled
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Bucket: !Ref CFNS3BucketStack
+      PolicyDocument:
+        Statement:
+          -
+            Sid: PutObjectAccess
+            Action:
+              - s3:PutObject
+            Effect: Allow
+            Principal:
+              AWS:
+                - '{{resolve:ssm:adminip-dev-iamaccount-param:1}}' # Added parameter to SSM
+            Resource:
+              - !Sub "arn:aws:s3:::${CfnS3BucketName}/*"
+Outputs:
+  CFNS3BucketStack:
+    Value: !Ref CFNS3BucketStack
+    Description: S3 Bucket for object storage
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-CfnS3BucketName"
