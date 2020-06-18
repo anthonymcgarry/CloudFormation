@@ -29,3 +29,21 @@ Resources:
         DBSubnet1ID: !GetAtt SubnetStack.Outputs.DBSubnet1ID
         DBSubnet2ID: !GetAtt SubnetStack.Outputs.DBSubnet2ID
         DBSubnet3ID: !GetAtt SubnetStack.Outputs.DBSubnet3ID
+  NACLStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: https://adminip-dev-cfntemplates-bucket.s3-eu-west-1.amazonaws.com/infrastructure/adminip-dev-nacl-stack.yaml
+      Parameters:
+        VPCID: !GetAtt VPCStack.Outputs.VPCID
+        EdgeSubnet1ID: !GetAtt SubnetStack.Outputs.EdgeSubnet1ID
+        EdgeSubnet2ID: !GetAtt SubnetStack.Outputs.EdgeSubnet2ID
+        EdgeSubnet3ID: !GetAtt SubnetStack.Outputs.EdgeSubnet3ID
+        OAMSubnet1ID: !GetAtt SubnetStack.Outputs.OAMSubnet1ID
+        OAMSubnet2ID: !GetAtt SubnetStack.Outputs.OAMSubnet2ID
+        OAMSubnet3ID: !GetAtt SubnetStack.Outputs.OAMSubnet3ID
+        AppSubnet1ID: !GetAtt SubnetStack.Outputs.AppSubnet1ID
+        AppSubnet2ID: !GetAtt SubnetStack.Outputs.AppSubnet2ID
+        AppSubnet3ID: !GetAtt SubnetStack.Outputs.AppSubnet3ID
+        DBSubnet1ID: !GetAtt SubnetStack.Outputs.DBSubnet1ID
+        DBSubnet2ID: !GetAtt SubnetStack.Outputs.DBSubnet2ID
+        DBSubnet3ID: !GetAtt SubnetStack.Outputs.DBSubnet3ID

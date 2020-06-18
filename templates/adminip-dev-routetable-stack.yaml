@@ -1,45 +1,45 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation Nested Network Stack for Route Tables, Routes and Associations
 Parameters:
-    VPCID:
-      Description: VPCStack VPC ID
-      Type: String
-    EdgeSubnet1ID:
-      Description: Edge Subnet 1 ID
-      Type: String
-    EdgeSubnet2ID:
-      Description: Edge Subnet 2 ID
-      Type: String
-    EdgeSubnet3ID:
-      Description: Edge Subnet 3 ID
-      Type: String
-    OAMSubnet1ID:
-      Description: OAM Subnet 1 ID
-      Type: String
-    OAMSubnet2ID:
-      Description: OAM Subnet 2 ID
-      Type: String
-    OAMSubnet3ID:
-      Description: OAM Subnet 3 ID
-      Type: String
-    AppSubnet1ID:
-      Description: App Subnet 1 ID
-      Type: String
-    AppSubnet2ID:
-      Description: App Subnet 2 ID
-      Type: String
-    AppSubnet3ID:
-      Description: App Subnet 3 ID
-      Type: String
-    DBSubnet1ID:
-      Description: DB Subnet 1 ID
-      Type: String
-    DBSubnet2ID:
-      Description: DB Subnet 2 ID
-      Type: String
-    DBSubnet3ID:
-      Description: DB Subnet 3 ID
-      Type: String
+  VPCID:
+    Description: VPCStack VPC ID
+    Type: String
+  EdgeSubnet1ID:
+    Description: Edge Subnet 1 ID
+    Type: String
+  EdgeSubnet2ID:
+    Description: Edge Subnet 2 ID
+    Type: String
+  EdgeSubnet3ID:
+    Description: Edge Subnet 3 ID
+    Type: String
+  OAMSubnet1ID:
+    Description: OAM Subnet 1 ID
+    Type: String
+  OAMSubnet2ID:
+    Description: OAM Subnet 2 ID
+    Type: String
+  OAMSubnet3ID:
+    Description: OAM Subnet 3 ID
+    Type: String
+  AppSubnet1ID:
+    Description: App Subnet 1 ID
+    Type: String
+  AppSubnet2ID:
+    Description: App Subnet 2 ID
+    Type: String
+  AppSubnet3ID:
+    Description: App Subnet 3 ID
+    Type: String
+  DBSubnet1ID:
+    Description: DB Subnet 1 ID
+    Type: String
+  DBSubnet2ID:
+    Description: DB Subnet 2 ID
+    Type: String
+  DBSubnet3ID:
+    Description: DB Subnet 3 ID
+    Type: String
 Resources:
   EdgeRouteTable1:
     Type: AWS::EC2::RouteTable

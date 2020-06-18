@@ -1,0 +1,232 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Nested Network Stack for Route Tables, Routes and Associations
+Parameters:
+  VPCID:
+    Description: VPCStack VPC ID
+    Type: String
+  EdgeSubnet1ID:
+    Description: Edge Subnet 1 ID
+    Type: String
+  EdgeSubnet2ID:
+    Description: Edge Subnet 2 ID
+    Type: String
+  EdgeSubnet3ID:
+    Description: Edge Subnet 3 ID
+    Type: String
+  OAMSubnet1ID:
+    Description: OAM Subnet 1 ID
+    Type: String
+  OAMSubnet2ID:
+    Description: OAM Subnet 2 ID
+    Type: String
+  OAMSubnet3ID:
+    Description: OAM Subnet 3 ID
+    Type: String
+  AppSubnet1ID:
+    Description: App Subnet 1 ID
+    Type: String
+  AppSubnet2ID:
+    Description: App Subnet 2 ID
+    Type: String
+  AppSubnet3ID:
+    Description: App Subnet 3 ID
+    Type: String
+  DBSubnet1ID:
+    Description: DB Subnet 1 ID
+    Type: String
+  DBSubnet2ID:
+    Description: DB Subnet 2 ID
+    Type: String
+  DBSubnet3ID:
+    Description: DB Subnet 3 ID
+    Type: String
+Resources:
+  EdgeNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-edgesubnets-nacl
+  EdgeNetworkAclIn100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: false
+      NetworkAclId: !Ref 'EdgeNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  EdgeNetworkAclOut100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: true
+      NetworkAclId: !Ref 'EdgeNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  EdgeNetworkAclAssoc01:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'EdgeSubnet1ID'
+      NetworkAclId: !Ref 'EdgeNetworkAcl'
+  EdgeNetworkAclAssoc02:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'EdgeSubnet2ID'
+      NetworkAclId: !Ref 'EdgeNetworkAcl'
+  EdgeNetworkAclAssoc03:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'EdgeSubnet3ID'
+      NetworkAclId: !Ref 'EdgeNetworkAcl'
+  OAMNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-oamsubnets-nacl
+  OAMNetworkAclIn100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: false
+      NetworkAclId: !Ref 'OAMNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  OAMNetworkAclOut100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: true
+      NetworkAclId: !Ref 'OAMNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  OAMNetworkAclAssoc01:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'OAMSubnet1ID'
+      NetworkAclId: !Ref 'OAMNetworkAcl'
+  OAMNetworkAclAssoc02:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'OAMSubnet2ID'
+      NetworkAclId: !Ref 'OAMNetworkAcl'
+  OAMNetworkAclAssoc03:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'OAMSubnet3ID'
+      NetworkAclId: !Ref 'OAMNetworkAcl'
+  AppNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-appsubnets-nacl
+  AppNetworkAclIn100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: false
+      NetworkAclId: !Ref 'AppNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  AppNetworkAclOut100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: true
+      NetworkAclId: !Ref 'AppNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  AppNetworkAclAssoc01:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'AppSubnet1ID'
+      NetworkAclId: !Ref 'AppNetworkAcl'
+  AppNetworkAclAssoc02:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'AppSubnet2ID'
+      NetworkAclId: !Ref 'AppNetworkAcl'
+  AppNetworkAclAssoc03:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'AppSubnet3ID'
+      NetworkAclId: !Ref 'AppNetworkAcl'
+  DBNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dbsubnets-nacl
+  DBNetworkAclIn100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: false
+      NetworkAclId: !Ref 'DBNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  DBNetworkAclOut100:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: true
+      NetworkAclId: !Ref 'DBNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  DBNetworkAclAssoc01:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'DBSubnet1ID'
+      NetworkAclId: !Ref 'DBNetworkAcl'
+  DBNetworkAclAssoc02:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'DBSubnet2ID'
+      NetworkAclId: !Ref 'DBNetworkAcl'
+  DBNetworkAclAssoc03:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref 'DBSubnet3ID'
+      NetworkAclId: !Ref 'DBNetworkAcl'
+Outputs:
+  EdgeNetworkAclID:
+    Value:
+      Ref: EdgeNetworkAcl
+    Description: Edge NACL ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-EdgeNetworkAcl"
+  OAMNetworkAclID:
+    Value:
+      Ref: OAMNetworkAcl
+    Description: OAM NACL ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-OAMNetworkAcl"
+  AppNetworkAclID:
+    Value:
+      Ref: AppNetworkAcl
+    Description: App NACL ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-AppNetworkAcl"
+  DBNetworkAclID:
+    Value:
+      Ref: DBNetworkAcl
+    Description: DB NACL ID
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-DBNetworkAcl"
