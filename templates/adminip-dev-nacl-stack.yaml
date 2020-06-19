@@ -43,6 +43,8 @@ Parameters:
 Resources:
   EdgeNetworkAcl:
     Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       VpcId: !Ref VPCID
       Tags:
@@ -50,6 +52,8 @@ Resources:
           Value: adminip-dev-edgesubnets-nacl
   EdgeNetworkAclIn100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: false
@@ -59,6 +63,8 @@ Resources:
       RuleNumber: 100
   EdgeNetworkAclOut100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: true
@@ -68,21 +74,29 @@ Resources:
       RuleNumber: 100
   EdgeNetworkAclAssoc01:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'EdgeSubnet1ID'
       NetworkAclId: !Ref 'EdgeNetworkAcl'
   EdgeNetworkAclAssoc02:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'EdgeSubnet2ID'
       NetworkAclId: !Ref 'EdgeNetworkAcl'
   EdgeNetworkAclAssoc03:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'EdgeSubnet3ID'
       NetworkAclId: !Ref 'EdgeNetworkAcl'
   OAMNetworkAcl:
     Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       VpcId: !Ref VPCID
       Tags:
@@ -90,6 +104,8 @@ Resources:
           Value: adminip-dev-oamsubnets-nacl
   OAMNetworkAclIn100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: false
@@ -99,6 +115,8 @@ Resources:
       RuleNumber: 100
   OAMNetworkAclOut100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: true
@@ -108,21 +126,29 @@ Resources:
       RuleNumber: 100
   OAMNetworkAclAssoc01:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'OAMSubnet1ID'
       NetworkAclId: !Ref 'OAMNetworkAcl'
   OAMNetworkAclAssoc02:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'OAMSubnet2ID'
       NetworkAclId: !Ref 'OAMNetworkAcl'
   OAMNetworkAclAssoc03:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'OAMSubnet3ID'
       NetworkAclId: !Ref 'OAMNetworkAcl'
   AppNetworkAcl:
     Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       VpcId: !Ref VPCID
       Tags:
@@ -130,6 +156,8 @@ Resources:
           Value: adminip-dev-appsubnets-nacl
   AppNetworkAclIn100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: false
@@ -139,6 +167,8 @@ Resources:
       RuleNumber: 100
   AppNetworkAclOut100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: true
@@ -148,21 +178,29 @@ Resources:
       RuleNumber: 100
   AppNetworkAclAssoc01:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'AppSubnet1ID'
       NetworkAclId: !Ref 'AppNetworkAcl'
   AppNetworkAclAssoc02:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'AppSubnet2ID'
       NetworkAclId: !Ref 'AppNetworkAcl'
   AppNetworkAclAssoc03:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'AppSubnet3ID'
       NetworkAclId: !Ref 'AppNetworkAcl'
   DBNetworkAcl:
     Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       VpcId: !Ref VPCID
       Tags:
@@ -170,6 +208,8 @@ Resources:
           Value: adminip-dev-dbsubnets-nacl
   DBNetworkAclIn100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: false
@@ -179,6 +219,8 @@ Resources:
       RuleNumber: 100
   DBNetworkAclOut100:
     Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       CidrBlock: '0.0.0.0/0'
       Egress: true
@@ -188,16 +230,22 @@ Resources:
       RuleNumber: 100
   DBNetworkAclAssoc01:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'DBSubnet1ID'
       NetworkAclId: !Ref 'DBNetworkAcl'
   DBNetworkAclAssoc02:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'DBSubnet2ID'
       NetworkAclId: !Ref 'DBNetworkAcl'
   DBNetworkAclAssoc03:
     Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       SubnetId: !Ref 'DBSubnet3ID'
       NetworkAclId: !Ref 'DBNetworkAcl'
