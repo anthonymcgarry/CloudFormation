@@ -48,8 +48,9 @@ Resources:
       PolicyDocument:
         Statement:
           -
-            Sid: PutObjectAccess
+            Sid: ObjectAccess
             Action:
+              - s3:GetObject
               - s3:PutObject
             Effect: Allow
             Principal:
@@ -62,5 +63,9 @@ Outputs:
     Value: !Ref CFNS3BucketStack
     Description: S3 Bucket for object storage
     Export:
-      Name:
-        Fn::Sub: "${AWS::StackName}-CfnS3BucketName"
+      Name: !Sub "${AWS::StackName}-CfnS3BucketName"
+  CFNS3BucketSecureURL:
+    Value: !Join ['', ['https://', !GetAtt [CFNS3BucketStack, RegionalDomainName]]]
+    Description: Name of S3 bucket to hold website content
+    Export:
+      Name: !Sub "${AWS::StackName}-CFNS3BucketSecureURL"
