@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Create S3 Buckets and output their URL to SSM for furthur use
+Description: Create S3 Buckets ro hold CFN templates
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -12,7 +12,7 @@ Metadata:
         default: S3 bucket for use with CFN
 Parameters:
   CfnS3BucketName:
-    Default: adminip-dev-cfntemplates-bucket
+    Default: adminip-dev-cfn-templates-bucket
     Description: The S3 bucket name
     Type: String
 Resources:
@@ -55,7 +55,8 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                - '{{resolve:ssm:adminip-dev-iamaccount-param:1}}' # Added parameter to SSM
+                - '{{resolve:ssm:adminip-dev-iam-account-param:1}}' # Added parameter to SSM
+                - '{{resolve:ssm:adminip-dev-iam-cfnrole-param:6}}'
             Resource:
               - !Sub "arn:aws:s3:::${CfnS3BucketName}/*"
 Outputs:

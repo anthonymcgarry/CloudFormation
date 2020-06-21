@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create Cloudformation service role and policy
+Parameters:
+  RoleName:
+    Description: IAM Role name
+    Type: String
+    Default: svcCloudFormation
+  PolicyName:
+    Description: IAM Policy name
+    Type: String
+    Default: svcCloudFormation
+Resources:
+  CfnServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      Path: /service/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  CfnUserPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Ref PolicyName
+      Path: /
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Action:
+          - iam:PassRole
+          Effect: Allow
+          Resource:
+          - !GetAtt CfnServiceRole.Arn
+        - Action:
+          - cloudformation:CreateStack
+          - cloudformation:CreateUploadBucket
+          Effect: Allow
+          Resource: "*"
+        - Action:
+          - s3:PutObject
+          - s3:GetObject
+          - s3:ListBucket
+          Effect: Allow
+          Resource:
+          - arn:aws:s3:::adminip-dev-cfn-templates-bucket*
+          - arn:aws:s3:::adminip-dev-cfn-templates-bucket/*
+Outputs:
+  CfnServiceRoleArn:
+    Value: !GetAtt CfnServiceRole.Arn
+  CfnUserPolicyArn:
+    Value: !Ref CfnUserPolicy
