@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create S3 Buckets ro hold Ssm templates
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: S3 Bucket Creation
+        Parameters:
+          - SsmS3BucketName
+    ParameterLabels:
+      SsmS3BucketName:
+        default: S3 bucket for use with Ssm
+Parameters:
+  SsmS3BucketName:
+    Default: adminip-dev-ssm-bucket
+    Description: The S3 bucket name
+    Type: String
+Resources:
+  SsmS3BucketStack:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref SsmS3BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: BucketOwnerFullControl
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+      - Key: Name
+        Value: adminip-dev-ssm-bucket
+      - Key: Description
+        Value: Object storage for SSM Logs
+      VersioningConfiguration:
+        Status: Enabled
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Bucket: !Ref SsmS3BucketStack
+      PolicyDocument:
+        Statement:
+          -
+            Sid: ObjectAccess
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Effect: Allow
+            Principal:
+              AWS:
+                - '{{resolve:ssm:adminip-dev-iam-account-param:1}}' # Added parameter to SSM
+            Resource:
+              - !Sub "arn:aws:s3:::${SsmS3BucketName}/*"
+Outputs:
+  SsmS3BucketStack:
+    Value: !Ref SsmS3BucketStack
+    Description: S3 Bucket for object storage
+    Export:
+      Name: !Sub "${AWS::StackName}-SsmS3BucketName"
+  SsmS3BucketSecureURL:
+    Value: !Join ['', ['https://', !GetAtt [SsmS3BucketStack, RegionalDomainName]]]
+    Description: Name of S3 bucket to hold website content
+    Export:
+      Name: !Sub "${AWS::StackName}-SsmS3BucketSecureURL"

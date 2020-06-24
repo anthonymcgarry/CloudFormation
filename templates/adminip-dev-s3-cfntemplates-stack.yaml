@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create S3 Buckets ro hold CFN templates
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: S3 Bucket Creation
+        Parameters:
+          - CfnS3BucketName
+    ParameterLabels:
+      CfnS3BucketName:
+        default: S3 bucket for use with CFN
+Parameters:
+  CfnS3BucketName:
+    Default: adminip-dev-cfn-templates-bucket
+    Description: The S3 bucket name
+    Type: String
+Resources:
+  CFNS3BucketStack:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref CfnS3BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: BucketOwnerFullControl
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+      - Key: Name
+        Value: adminip-dev-cfntemplates-bucket
+      - Key: Description
+        Value: Object storage for CFN Templates
+      VersioningConfiguration:
+        Status: Enabled
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Bucket: !Ref CFNS3BucketStack
+      PolicyDocument:
+        Statement:
+          -
+            Sid: ObjectAccess
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Effect: Allow
+            Principal:
+              AWS:
+                - '{{resolve:ssm:adminip-dev-iam-account-param:1}}' # Added parameter to SSM
+                - '{{resolve:ssm:adminip-dev-iam-cfnrole-param:6}}'
+            Resource:
+              - !Sub "arn:aws:s3:::${CfnS3BucketName}/*"
+Outputs:
+  CFNS3BucketStack:
+    Value: !Ref CFNS3BucketStack
+    Description: S3 Bucket for object storage
+    Export:
+      Name: !Sub "${AWS::StackName}-CfnS3BucketName"
+  CFNS3BucketSecureURL:
+    Value: !Join ['', ['https://', !GetAtt [CFNS3BucketStack, RegionalDomainName]]]
+    Description: Name of S3 bucket to hold website content
+    Export:
+      Name: !Sub "${AWS::StackName}-CFNS3BucketSecureURL"

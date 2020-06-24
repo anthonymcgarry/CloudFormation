@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation to create internet gateway and NAT gateway in DMZ subnet
+Parameters:
+  VPCID:
+    Description: VPCStack VPC ID
+    Type: String
+  DMZSubnet1ID:
+    Description: DMZ Subnet 1 ID
+    Type: String
+#  DMZSubnet2ID:
+#    Description: DMZ Subnet 2 ID
+#    Type: String
+#  DMZSubnet3ID:
+#    Description: DMZ Subnet 3 ID
+#    Type: String
+Resources:
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: adminip-dev-internet-igw
+  InternetGatewayAtt:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPCID
+  NatGatewayEip01:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAtt
+    Properties:
+      Domain: vpc
+  NatGateway01:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEip01.AllocationId
+      SubnetId: !Ref DMZSubnet1ID
+#  NatGatewayEip02:
+#    Type: AWS::EC2::EIP
+#    DependsOn: InternetGatewayAtt
+#    Properties:
+#      Domain: vpc
+#  NatGateway02:
+#    Type: AWS::EC2::NatGateway
+#    Properties:
+#      AllocationId: !GetAtt NatGatewayEip02.AllocationId
+#      SubnetId: !Ref DMZSubnet2ID
+#  NatGatewayEip03:
+#    Type: AWS::EC2::EIP
+#    DependsOn: InternetGatewayAtt
+#    Properties:
+#      Domain: vpc
+#  NatGateway03:
+#    Type: AWS::EC2::NatGateway
+#    Properties:
+#      AllocationId: !GetAtt NatGatewayEip03.AllocationId
+#      SubnetId: !Ref DMZSubnet3ID
+Outputs:
+  InternetGatewayID:
+    Value: !Ref InternetGateway
+    Description: Internet Gateway ID
+    Export:
+      Name: !Sub "${AWS::StackName}-InternetGateway"
+  NatGateway01ID:
+    Value: !Ref NatGateway01
+    Description: Nat Gateway 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-NatGateway01"
+#  NatGateway02ID:
+#    Value: !Ref NatGateway02
+#    Description: Nat Gateway 2 ID
+#    Export:
+#      Name: !Sub "${AWS::StackName}-NatGateway02"
+#  NatGateway03ID:
+#    Value: !Ref NatGateway03
+#    Description: Nat Gateway 3 ID
+#    Export:
+#      Name: !Sub "${AWS::StackName}-NatGateway03"

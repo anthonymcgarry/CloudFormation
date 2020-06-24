@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create ec2 instance for development purposes
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  NetworkStack:
+    Description: Name of the network stack
+    Type: String
+    Default: adminip-dev-ec2-net-rstack
+Resources:
+  DevBox01OAMSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupDescription: DevBox01 OAM in dev VPC Security Group
+      GroupName: adminip-dev-devbox01-o-sg
+      VpcId:
+        Fn::ImportValue: !Sub ${NetworkStack}-VPCID
+      Tags:
+      - Key: Name
+        Value: adminip-dev-devbox01-o-sg
+  DevBox01AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupDescription: DevBox01 App in dev VPC Security Group
+      GroupName: adminip-dev-devbox01-t-sg
+      VpcId:
+        Fn::ImportValue: !Sub ${NetworkStack}-VPCID
+      Tags:
+      - Key: Name
+        Value: adminip-dev-devbox01-t-sg
+  OAMInterface:
+    Type: AWS::EC2::NetworkInterface
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      SubnetId:
+        Fn::ImportValue: !Sub ${NetworkStack}-OAMSubnet1ID
+      Description: OAM Interface in AZ1 OAM Subnet
+      GroupSet:
+      - !Ref DevBox01OAMSecurityGroup
+      SourceDestCheck: true
+      Tags:
+      - Key: Name
+        Value: admin-dev-devbox01-o-eni
+  AppInterface:
+    Type: AWS::EC2::NetworkInterface
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      SubnetId:
+        Fn::ImportValue: !Sub ${NetworkStack}-AppSubnet1ID
+      Description: App Interface in AZ1 App Subnet
+      GroupSet:
+      - !Ref DevBox01AppSecurityGroup
+      SourceDestCheck: true
+      Tags:
+      - Key: Name
+        Value: admin-dev-devbox01-t-eni
+  DevBox01Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+      ImageId: ami-00b5b04854bca6596
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      IamInstanceProfile: svcSSM
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref OAMInterface
+          DeviceIndex: "0"
+        - NetworkInterfaceId: !Ref AppInterface
+          DeviceIndex: "1"
+      Tags:
+      - Key: Name
+        Value: adminip-dev-devbox01-1-ec2
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            yum update -y
+            amazon-linux-extras install postgresql10
+Outputs:
+  DevBox01Instance:
+    Value: !Ref DevBox01Instance
+    Description: DevBox01Instance
+    Export:
+      Name: !Sub "${AWS::StackName}-DevBox01Instance"

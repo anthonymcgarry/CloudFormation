@@ -1,0 +1,368 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Nested Network Stack for Route Tables, Routes and Associations
+Parameters:
+  VPCID:
+    Description: VPCStack VPC ID
+    Type: String
+  EdgeSubnet1ID:
+    Description: Edge Subnet 1 ID
+    Type: String
+  EdgeSubnet2ID:
+    Description: Edge Subnet 2 ID
+    Type: String
+  EdgeSubnet3ID:
+    Description: Edge Subnet 3 ID
+    Type: String
+  OAMSubnet1ID:
+    Description: OAM Subnet 1 ID
+    Type: String
+  OAMSubnet2ID:
+    Description: OAM Subnet 2 ID
+    Type: String
+  OAMSubnet3ID:
+    Description: OAM Subnet 3 ID
+    Type: String
+  AppSubnet1ID:
+    Description: App Subnet 1 ID
+    Type: String
+  AppSubnet2ID:
+    Description: App Subnet 2 ID
+    Type: String
+  AppSubnet3ID:
+    Description: App Subnet 3 ID
+    Type: String
+  DBSubnet1ID:
+    Description: DB Subnet 1 ID
+    Type: String
+  DBSubnet2ID:
+    Description: DB Subnet 2 ID
+    Type: String
+  DBSubnet3ID:
+    Description: DB Subnet 3 ID
+    Type: String
+  DMZSubnet1ID:
+    Description: DMZ Subnet 1 ID
+    Type: String
+  DMZSubnet2ID:
+    Description: DMZ Subnet 2 ID
+    Type: String
+  DMZSubnet3ID:
+    Description: DMZ Subnet 3 ID
+    Type: String
+Resources:
+  EdgeRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-edge-e-1-rtb
+  EdgeRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref EdgeRouteTable1
+      SubnetId: !Ref EdgeSubnet1ID
+  EdgeRouteTable2:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-edge-e-2-rtb
+  EdgeRouteTable2Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref EdgeRouteTable2
+      SubnetId: !Ref EdgeSubnet2ID
+  EdgeRouteTable3:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-edge-e-3-rtb
+  EdgeRouteTable3Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref EdgeRouteTable3
+      SubnetId: !Ref EdgeSubnet3ID
+  OAMRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvoam-o-1-rtb
+  OAMRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref OAMRouteTable1
+      SubnetId: !Ref OAMSubnet1ID
+  OAMRouteTable2:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvoam-o-2-rtb
+  OAMRouteTable2Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref OAMRouteTable2
+      SubnetId: !Ref OAMSubnet2ID
+  OAMRouteTable3:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvoam-o-3-rtb
+  OAMRouteTable3Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref OAMRouteTable3
+      SubnetId: !Ref OAMSubnet3ID
+  AppRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvapp-t-1-rtb
+  AppRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref AppRouteTable1
+      SubnetId: !Ref AppSubnet1ID
+  AppRouteTable2:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvapp-t-2-rtb
+  AppRouteTable2Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref AppRouteTable2
+      SubnetId: !Ref AppSubnet2ID
+  AppRouteTable3:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvapp-t-3-rtb
+  AppRouteTable3Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref AppRouteTable3
+      SubnetId: !Ref AppSubnet3ID
+  DBRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvdb-t-1-rtb
+  DBRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DBRouteTable1
+      SubnetId: !Ref DBSubnet1ID
+  DBRouteTable2:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvdb-t-2-rtb
+  DBRouteTable2Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DBRouteTable2
+      SubnetId: !Ref DBSubnet2ID
+  DBRouteTable3:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-srvdb-t-3-rtb
+  DBRouteTable3Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DBRouteTable3
+      SubnetId: !Ref DBSubnet3ID
+  DMZRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmz-t-1-rtb
+  DMZRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DMZRouteTable1
+      SubnetId: !Ref DMZSubnet1ID
+  DMZRouteTable2:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmz-t-2-rtb
+  DMZRouteTable2Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DMZRouteTable2
+      SubnetId: !Ref DMZSubnet2ID
+  DMZRouteTable3:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmz-t-3-rtb
+  DMZRouteTable3Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DMZRouteTable3
+      SubnetId: !Ref DMZSubnet3ID
+Outputs:
+  EdgeRouteTable1ID:
+    Value: !Ref EdgeRouteTable1
+    Description: Edge Route Table 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable1"
+  EdgeRouteTable2ID:
+    Value: !Ref EdgeRouteTable2
+    Description: Edge Route Table 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable2"
+  EdgeRouteTable3ID:
+    Value: !Ref EdgeRouteTable3
+    Description: Edge Route Table 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable3"
+  OAMRouteTable1ID:
+    Value: !Ref OAMRouteTable1
+    Description: OAM Route Table 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMRouteTable1"
+  OAMRouteTable2ID:
+    Value: !Ref OAMRouteTable2
+    Description: OAM Route Table 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMRouteTable2"
+  OAMRouteTable3ID:
+    Value: !Ref OAMRouteTable3
+    Description: OAM Route Table 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMRouteTable3"
+  AppRouteTable1ID:
+    Value: !Ref AppRouteTable1
+    Description: App Route Table 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppRouteTable1"
+  AppRouteTable2ID:
+    Value: !Ref AppRouteTable2
+    Description: App Route Table 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppRouteTable2"
+  AppRouteTable3ID:
+    Value: !Ref AppRouteTable3
+    Description: App Route Table 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppRouteTable3"
+  DBRouteTable1ID:
+    Value: !Ref DBRouteTable1
+    Description: DB Route Table 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBRouteTable1"
+  DBRouteTable2ID:
+    Value: !Ref DBRouteTable2
+    Description: DB Route Table 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBRouteTable2"
+  DBRouteTable3ID:
+    Value: !Ref DBRouteTable3
+    Description: DB Route Table 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBRouteTable3"
+  DMZRouteTable1ID:
+    Value: !Ref DMZRouteTable1
+    Description: DMZ Route Table 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable1"
+  DMZRouteTable2ID:
+    Value: !Ref DMZRouteTable2
+    Description: DMZ Route Table 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable2"
+  DMZRouteTable3ID:
+    Value: !Ref DMZRouteTable3
+    Description: DMZ Route Table 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable3"

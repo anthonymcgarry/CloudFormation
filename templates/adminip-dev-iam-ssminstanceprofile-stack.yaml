@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create ec2 instance for development purposes
+Parameters:
+  ProfileName:
+    Description: IAM Profile name
+    Type: String
+    Default: svcSSM
+  RoleName:
+    Description: IAM Role name
+    Type: String
+    Default: svcSSM
+Resources:
+  Ec2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Ref ProfileName
+      Path: /
+      Roles: [ !Ref Ec2InstanceRole ]
+  Ec2InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      Path: /service/
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: ec2.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+Outputs:
+  Ec2InstanceProfile:
+    Value: !Ref Ec2InstanceProfile
+    Description: Ec2 SSM Instance Profile
+    Export:
+      Name: !Sub "${AWS::StackName}-Ec2InstanceProfile"
+

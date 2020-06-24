@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create VPC endpoints and security groups for SSM access to EC2 instances
+Resources:
+  SsmVpceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupDescription: Allow tcp 443 for SSM Session Manager for private subnets
+      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      GroupName: adminip-dev-ssm-o-sg
+      Tags:
+      - Key: Name
+        Value: adminip-dev-ssm-o-sg
+  SsmVpceSgIngress01:
+    Type: AWS::EC2::SecurityGroupIngress
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupId: !Ref SsmVpceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet1CIDR
+  SsmVpceSgIngress02:
+    Type: AWS::EC2::SecurityGroupIngress
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupId: !Ref SsmVpceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet2CIDR
+  SsmVpceSgIngress03:
+    Type: AWS::EC2::SecurityGroupIngress
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupId: !Ref SsmVpceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet3CIDR
+  VpceInterfaceSsm:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ssm
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet1
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet2
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet3
+      SecurityGroupIds:
+        - !Ref SsmVpceSecurityGroup
+  VpceInterfaceEc2messages:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ec2messages
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet1
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet2
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet3
+      SecurityGroupIds:
+        - !Ref SsmVpceSecurityGroup
+  VpceInterfaceEc2:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ec2
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet1
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet2
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet3
+      SecurityGroupIds:
+        - !Ref SsmVpceSecurityGroup
+  VpcEndpointInterfaceSsmmessages:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ssmmessages
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet1
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet2
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-OAMSubnet3
+      SecurityGroupIds:
+        - !Ref SsmVpceSecurityGroup

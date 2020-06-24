@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create ec2 instance for development purposes
+Parameters:
+  DBInstanceIdentifier:
+    Type: String
+    Default: "dev-instance"
+  DBEngine:
+    Type: String
+    Default: "postgres"
+  DBEngineVersion:
+    Type: String
+    Default: "10.7"
+  DBInstanceClass:
+    Type: String
+    Default: "db.t3.small"
+  DBStorageType:
+    Type: String
+    Default: "gp2"
+  DBAllocatedStorage:
+    Type: Number
+    Default: 10
+  DBName:
+    Type: String
+    Default: "{{resolve:ssm:adminip-dev-rds-dbname-param:1}}"
+  DBUser:
+    Type: String
+    Default: "{{resolve:ssm:adminip-dev-rds-dbusername-param:1}}"
+  DBPassword:
+    Type: String
+    Default: "{{resolve:ssm-secure:adminip-dev-rds-masterpassword-param:1}}"
+    NoEcho: True
+Resources:
+  RdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      GroupDescription: RDS Postgres Security Group
+      GroupName: adminip-dev-rdspostgres-t-sg
+      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      Tags:
+      - Key: Name
+        Value: adminip-dev-rdspostgres-t-sg
+  RdsSgIngress:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      GroupId: !Ref RdsSecurityGroup
+      IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      CidrIp: 0.0.0.0/0
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: DBSubnetGroup for RDS instances
+      SubnetIds:
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-DBSubnet1
+        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-DBSubnet2
+  MasterInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      MultiAZ: true
+      DBInstanceIdentifier: !Ref DBInstanceIdentifier
+      DBName: !Ref DBName
+      AllocatedStorage: !Ref DBAllocatedStorage
+      DBInstanceClass: !Ref DBInstanceClass
+      StorageType: !Ref DBStorageType
+      Engine: !Ref DBEngine
+      EngineVersion: !Ref DBEngineVersion
+      MasterUsername: !Ref DBUser
+      MasterUserPassword: !Ref DBPassword
+      PubliclyAccessible: False
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref RdsSecurityGroup
+      Tags:
+      - Key: Name
+        Value: adminip-dev-rds-postgres-rds
+Outputs:
+  EndpointMaster:
+    Description: Endpoint of the newly created RDS master
+    Value: MasterInstance
