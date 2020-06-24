@@ -1,20 +1,37 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS CloudFormation Root stack
+Parameters:
+  S3CfnStack:
+    Description: Name of the network stack
+    Type: String
+    Default: adminip-dev-s3-cfntemplates-rstack
 Resources:
   VPCStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join ["", [!ImportValue adminip-dev-s3-cfntemplates-rstack-CFNS3BucketSecureURL,'/ec2/adminip-dev-ec2-net-vpc-nstack.yaml']]
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - Fn::ImportValue: !Sub ${S3CfnStack}-CFNS3BucketSecureURL
+            - '/ec2/adminip-dev-ec2-net-vpc-nstack.yaml'
   SubnetStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join ["", [!ImportValue adminip-dev-s3-cfntemplates-rstack-CFNS3BucketSecureURL,'/ec2/adminip-dev-ec2-net-subnet-nstack.yaml']]
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - Fn::ImportValue: !Sub ${S3CfnStack}-CFNS3BucketSecureURL
+            - '/ec2/adminip-dev-ec2-net-subnet-nstack.yaml'
       Parameters:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
   RouteTableStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join ["", [!ImportValue adminip-dev-s3-cfntemplates-rstack-CFNS3BucketSecureURL,'/ec2/adminip-dev-ec2-net-routetable-nstack.yaml']]
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - Fn::ImportValue: !Sub ${S3CfnStack}-CFNS3BucketSecureURL
+            - '/ec2/adminip-dev-ec2-net-routetable-nstack.yaml'
       Parameters:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         EdgeSubnet1ID: !GetAtt SubnetStack.Outputs.EdgeSubnet1ID
@@ -29,10 +46,17 @@ Resources:
         DBSubnet1ID: !GetAtt SubnetStack.Outputs.DBSubnet1ID
         DBSubnet2ID: !GetAtt SubnetStack.Outputs.DBSubnet2ID
         DBSubnet3ID: !GetAtt SubnetStack.Outputs.DBSubnet3ID
+        DMZSubnet1ID: !GetAtt SubnetStack.Outputs.DMZSubnet1ID
+        DMZSubnet2ID: !GetAtt SubnetStack.Outputs.DMZSubnet2ID
+        DMZSubnet3ID: !GetAtt SubnetStack.Outputs.DMZSubnet3ID
   NACLStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Join ["", [!ImportValue adminip-dev-s3-cfntemplates-rstack-CFNS3BucketSecureURL,'/ec2/adminip-dev-ec2-net-nacl-nstack.yaml']]
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - Fn::ImportValue: !Sub ${S3CfnStack}-CFNS3BucketSecureURL
+            - '/ec2/adminip-dev-ec2-net-nacl-nstack.yaml'
       Parameters:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         EdgeSubnet1ID: !GetAtt SubnetStack.Outputs.EdgeSubnet1ID
@@ -47,3 +71,240 @@ Resources:
         DBSubnet1ID: !GetAtt SubnetStack.Outputs.DBSubnet1ID
         DBSubnet2ID: !GetAtt SubnetStack.Outputs.DBSubnet2ID
         DBSubnet3ID: !GetAtt SubnetStack.Outputs.DBSubnet3ID
+        DMZSubnet1ID: !GetAtt SubnetStack.Outputs.DMZSubnet1ID
+        DMZSubnet2ID: !GetAtt SubnetStack.Outputs.DMZSubnet2ID
+        DMZSubnet3ID: !GetAtt SubnetStack.Outputs.DMZSubnet3ID
+#  GWStack:
+#    Type: 'AWS::CloudFormation::Stack'
+#    Properties:
+#      TemplateURL:
+#          Fn::Join:
+#            - ""
+#            - - Fn::ImportValue: !Sub ${S3CfnStack}-CFNS3BucketSecureURL
+#              - '/ec2/adminip-dev-ec2-net-gateways-nstack.yaml'
+#      Parameters:
+#        VPCID: !GetAtt VPCStack.Outputs.VPCID
+#        DMZSubnet1ID: !GetAtt SubnetStack.Outputs.DMZSubnet1ID
+#        DMZSubnet2ID: !GetAtt SubnetStack.Outputs.DMZSubnet2ID
+#        DMZSubnet3ID: !GetAtt SubnetStack.Outputs.DMZSubnet3ID
+#  RouteStack:
+#    Type: 'AWS::CloudFormation::Stack'
+#    Properties:
+#      TemplateURL:
+#          Fn::Join:
+#            - ""
+#            - - Fn::ImportValue: !Sub ${S3CfnStack}-CFNS3BucketSecureURL
+#              - '/ec2/adminip-dev-ec2-net-routes-nstack.yaml'
+#      Parameters:
+#        OAMRouteTable1ID: !GetAtt RouteTableStack.Outputs.OAMRouteTable1ID
+#        OAMRouteTable2ID: !GetAtt RouteTableStack.Outputs.OAMRouteTable2ID
+#        OAMRouteTable3ID: !GetAtt RouteTableStack.Outputs.OAMRouteTable3ID
+#        DMZRouteTable1ID: !GetAtt RouteTableStack.Outputs.DMZRouteTable1ID
+#        DMZRouteTable2ID: !GetAtt RouteTableStack.Outputs.DMZRouteTable2ID
+#        DMZRouteTable3ID: !GetAtt RouteTableStack.Outputs.DMZRouteTable3ID
+#        InternetGatewayID: !GetAtt GWStack.Outputs.InternetGatewayID
+#        NatGateway1ID: !GetAtt GWStack.Outputs.NatGateway1ID
+#        NatGateway2ID: !GetAtt GWStack.Outputs.NatGateway2ID
+#        NatGateway3ID: !GetAtt GWStack.Outputs.NatGateway3ID
+# add in above if you want all three AZ's to have access. Aslo edit gateways and routes nstack files
+Outputs:
+  VPCID:
+    Value: !GetAtt VPCStack.Outputs.VPCID
+    Description: VPC ID
+    Export:
+      Name: !Sub "${AWS::StackName}-VPCID"
+  EdgeSubnet1ID:
+    Value: !GetAtt SubnetStack.Outputs.EdgeSubnet1ID
+    Description: Edge Subnet 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeSubnet1ID"
+  EdgeSubnet2ID:
+    Value: !GetAtt SubnetStack.Outputs.EdgeSubnet2ID
+    Description: Edge Subnet 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeSubnet2ID"
+  EdgeSubnet3ID:
+    Value: !GetAtt SubnetStack.Outputs.EdgeSubnet3ID
+    Description: Edge Subnet 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeSubnet3ID"
+  OAMSubnet1ID:
+    Value: !GetAtt SubnetStack.Outputs.OAMSubnet1ID
+    Description: OAM Subnet 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMSubnet1ID"
+  OAMSubnet2ID:
+    Value: !GetAtt SubnetStack.Outputs.OAMSubnet2ID
+    Description: OAM Subnet 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMSubnet2ID"
+  OAMSubnet3ID:
+    Value: !GetAtt SubnetStack.Outputs.OAMSubnet3ID
+    Description: OAM Subnet 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMSubnet3ID"
+  AppSubnet1ID:
+    Value: !GetAtt SubnetStack.Outputs.AppSubnet1ID
+    Description: App Subnet 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppSubnet1ID"
+  AppSubnet2ID:
+    Value: !GetAtt SubnetStack.Outputs.AppSubnet2ID
+    Description: App Subnet 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppSubnet2ID"
+  AppSubnet3ID:
+    Value: !GetAtt SubnetStack.Outputs.AppSubnet3ID
+    Description: App Subnet 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppSubnet3ID"
+  DBSubnet1ID:
+    Value: !GetAtt SubnetStack.Outputs.DBSubnet1ID
+    Description: DB Subnet 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSubnet1ID"
+  DBSubnet2ID:
+    Value: !GetAtt SubnetStack.Outputs.DBSubnet2ID
+    Description: DB Subnet 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSubnet2ID"
+  DBSubnet3ID:
+    Value: !GetAtt SubnetStack.Outputs.DBSubnet3ID
+    Description: DB Subnet 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSubnet3ID"
+  DMZSubnet1ID:
+    Value: !GetAtt SubnetStack.Outputs.DMZSubnet1ID
+    Description: DMZ Subnet 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZSubnet1ID"
+  DMZSubnet2ID:
+    Value: !GetAtt SubnetStack.Outputs.DMZSubnet2ID
+    Description: DMZ Subnet 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZSubnet2ID"
+  DMZSubnet3ID:
+    Value: !GetAtt SubnetStack.Outputs.DMZSubnet3ID
+    Description: DMZ Subnet 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZSubnet3ID"
+  EdgeRouteTable1ID:
+    Value: !GetAtt RouteTableStack.Outputs.EdgeRouteTable1ID
+    Description: Edge RouteTable 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable1ID"
+  EdgeRouteTable2ID:
+    Value: !GetAtt RouteTableStack.Outputs.EdgeRouteTable2ID
+    Description: Edge RouteTable 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable2ID"
+  EdgeRouteTable3ID:
+    Value: !GetAtt RouteTableStack.Outputs.EdgeRouteTable3ID
+    Description: Edge RouteTable 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeRouteTable3ID"
+  OAMRouteTable1ID:
+    Value: !GetAtt RouteTableStack.Outputs.OAMRouteTable1ID
+    Description: OAM RouteTable 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMRouteTable1ID"
+  OAMRouteTable2ID:
+    Value: !GetAtt RouteTableStack.Outputs.OAMRouteTable2ID
+    Description: OAM RouteTable 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMRouteTable2ID"
+  OAMRouteTable3ID:
+    Value: !GetAtt RouteTableStack.Outputs.OAMRouteTable3ID
+    Description: OAM RouteTable 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMRouteTable3ID"
+  AppRouteTable1ID:
+    Value: !GetAtt RouteTableStack.Outputs.AppRouteTable1ID
+    Description: App RouteTable 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppRouteTable1ID"
+  AppRouteTable2ID:
+    Value: !GetAtt RouteTableStack.Outputs.AppRouteTable2ID
+    Description: App RouteTable 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppRouteTable2ID"
+  AppRouteTable3ID:
+    Value: !GetAtt RouteTableStack.Outputs.AppRouteTable3ID
+    Description: App RouteTable 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppRouteTable3ID"
+  DBRouteTable1ID:
+    Value: !GetAtt RouteTableStack.Outputs.DBRouteTable1ID
+    Description: DB RouteTable 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBRouteTable1ID"
+  DBRouteTable2ID:
+    Value: !GetAtt RouteTableStack.Outputs.DBRouteTable2ID
+    Description: DB RouteTable 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBRouteTable2ID"
+  DBRouteTable3ID:
+    Value: !GetAtt RouteTableStack.Outputs.DBRouteTable3ID
+    Description: DB RouteTable 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBRouteTable3ID"
+  DMZRouteTable1ID:
+    Value: !GetAtt RouteTableStack.Outputs.DMZRouteTable1ID
+    Description: DMZ RouteTable 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable1ID"
+  DMZRouteTable2ID:
+    Value: !GetAtt RouteTableStack.Outputs.DMZRouteTable2ID
+    Description: DMZ RouteTable 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable2ID"
+  DMZRouteTable3ID:
+    Value: !GetAtt RouteTableStack.Outputs.DMZRouteTable3ID
+    Description: DMZ RouteTable 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable3ID"
+  EdgeNetworkAclID:
+    Value: !GetAtt NACLStack.Outputs.EdgeNetworkAclID
+    Description: Edge NACL ID
+    Export:
+      Name: !Sub "${AWS::StackName}-EdgeNetworkAcl"
+  OAMNetworkAclID:
+    Value: !GetAtt NACLStack.Outputs.OAMNetworkAclID
+    Description: OAM NACL ID
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMNetworkAcl"
+  AppNetworkAclID:
+    Value: !GetAtt NACLStack.Outputs.AppNetworkAclID
+    Description: App NACL ID
+    Export:
+      Name: !Sub "${AWS::StackName}-AppNetworkAcl"
+  DBNetworkAclID:
+    Value: !GetAtt NACLStack.Outputs.DBNetworkAclID
+    Description: DB NACL ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DBNetworkAcl"
+  DMZNetworkAclID:
+    Value: !GetAtt NACLStack.Outputs.DMZNetworkAclID
+    Description: DMZ NACL ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZNetworkAcl"
+#  InternetGatewayID:
+#    Value: !GetAtt GWStack.Outputs.InternetGatewayID
+#    Description: Internet Gateway ID
+#    Export:
+#      Name: !Sub "${AWS::StackName}-InternetGatewayID"
+#  NatGateway1ID:
+#    Value: !GetAtt GWStack.Outputs.NatGateway1ID
+#    Description: NAT Gateway 1 ID
+#    Export:
+#      Name: !Sub "${AWS::StackName}-NatGateway1ID"
+#  NatGateway2ID:
+#    Value: !GetAtt GWStack.Outputs.NatGateway2ID
+#    Description: NAT Gateway 2 ID
+#    Export:
+#      Name: !Sub "${AWS::StackName}-NatGateway2ID"
+#  NatGateway3ID:
+#    Value: !GetAtt GWStack.Outputs.NatGateway3ID
+#    Description: NAT Gateway 3 ID
+#    Export:
+#      Name: !Sub "${AWS::StackName}-NatGateway3ID"

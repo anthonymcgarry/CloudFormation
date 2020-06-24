@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Creates an RDS EventSubscription/SNS/Email Alerts"
+Parameters:
+  DbAlertEmail:
+    Type: String
+    Default: "{{resolve:ssm:adminip-dev-sns-email-param:1}}"
+Resources:
+  RdsDbSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint:
+            Ref: DbAlertEmail
+          Protocol: email
+      TopicName: "RdsAlertTopic"
+  RdsEventSubscription:
+    Type: AWS::RDS::EventSubscription
+    Properties:
+      Enabled: true
+      EventCategories:
+        - availability
+        - configuration change
+        - creation
+        - deletion
+        - failover
+        - failure
+        - recovery
+      SnsTopicArn:
+        Ref: RdsDbSnsTopic
+      SourceType: db-instance

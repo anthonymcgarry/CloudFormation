@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation to create internet gateway and NAT gateway in DMZ subnet
+Parameters:
+  OAMRouteTable1ID:
+    Description: OAM Route Table 1 ID
+    Type: String
+  OAMRouteTable2ID:
+    Description: OAM Route Table 2 ID
+    Type: String
+  OAMRouteTable3ID:
+    Description: OAM Route Table 3 ID
+    Type: String
+  DMZRouteTable1ID:
+    Description: DMZ Route Table 1 ID
+    Type: String
+  DMZRouteTable2ID:
+    Description: DMZ Route Table 2 ID
+    Type: String
+  DMZRouteTable3ID:
+    Description: DMZ Route Table 3 ID
+    Type: String
+  InternetGatewayID:
+    Description: Internet Gateway ID
+    Type: String
+  NatGateway01ID:
+    Description: NAT Gateway 1 ID
+    Type: String
+#  NatGateway02ID:
+#    Description: NAT Gateway 2 ID
+#    Type: String
+#  NatGateway03ID:
+#    Description: NAT Gateway 3 ID
+#    Type: String
+Resources:
+  DMZDefaultRoute01:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref DMZRouteTable1ID
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGatewayID
+  DMZDefaultRoute02:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref DMZRouteTable2ID
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGatewayID
+  DMZDefaultRoute03:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref DMZRouteTable3ID
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGatewayID
+  OAMDefaultRoute01:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref OAMRouteTable1ID
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway01ID
+#  OAMDefaultRoute02:
+#    Type: AWS::EC2::Route
+#    Properties:
+#      RouteTableId: !Ref OAMRouteTable2ID
+#      DestinationCidrBlock: 0.0.0.0/0
+#      NatGatewayId: !Ref NatGateway02ID
+#  OAMDefaultRoute03:
+#    Type: AWS::EC2::Route
+#    Properties:
+#      RouteTableId: !Ref OAMRouteTable3ID
+#      DestinationCidrBlock: 0.0.0.0/0
+#      NatGatewayId: !Ref NatGateway03ID

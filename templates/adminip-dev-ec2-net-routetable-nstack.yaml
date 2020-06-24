@@ -40,6 +40,15 @@ Parameters:
   DBSubnet3ID:
     Description: DB Subnet 3 ID
     Type: String
+  DMZSubnet1ID:
+    Description: DMZ Subnet 1 ID
+    Type: String
+  DMZSubnet2ID:
+    Description: DMZ Subnet 2 ID
+    Type: String
+  DMZSubnet3ID:
+    Description: DMZ Subnet 3 ID
+    Type: String
 Resources:
   EdgeRouteTable1:
     Type: AWS::EC2::RouteTable
@@ -233,6 +242,54 @@ Resources:
     Properties:
       RouteTableId: !Ref DBRouteTable3
       SubnetId: !Ref DBSubnet3ID
+  DMZRouteTable1:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmz-t-1-rtb
+  DMZRouteTable1Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DMZRouteTable1
+      SubnetId: !Ref DMZSubnet1ID
+  DMZRouteTable2:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmz-t-2-rtb
+  DMZRouteTable2Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DMZRouteTable2
+      SubnetId: !Ref DMZSubnet2ID
+  DMZRouteTable3:
+    Type: AWS::EC2::RouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmz-t-3-rtb
+  DMZRouteTable3Association001:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      RouteTableId: !Ref DMZRouteTable3
+      SubnetId: !Ref DMZSubnet3ID
 Outputs:
   EdgeRouteTable1ID:
     Value: !Ref EdgeRouteTable1
@@ -294,3 +351,18 @@ Outputs:
     Description: DB Route Table 3 ID
     Export:
       Name: !Sub "${AWS::StackName}-DBRouteTable3"
+  DMZRouteTable1ID:
+    Value: !Ref DMZRouteTable1
+    Description: DMZ Route Table 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable1"
+  DMZRouteTable2ID:
+    Value: !Ref DMZRouteTable2
+    Description: DMZ Route Table 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable2"
+  DMZRouteTable3ID:
+    Value: !Ref DMZRouteTable3
+    Description: DMZ Route Table 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZRouteTable3"

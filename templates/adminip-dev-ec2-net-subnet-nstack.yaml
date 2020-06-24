@@ -18,6 +18,9 @@ Metadata:
           - DBSubnet1CIDR
           - DBSubnet2CIDR
           - DBSubnet3CIDR
+          - DMZSubnet1CIDR
+          - DMZSubnet2CIDR
+          - DMZSubnet3CIDR
     ParameterLabels:
       EdgeSubnet1CIDR:
         default: Edge Subnet 1
@@ -43,6 +46,12 @@ Metadata:
         default: DB Subnet 2
       DBSubnet3CIDR:
         default: DB Subnet 3
+      DMZSubnet1CIDR:
+        default: DMZ Subnet 1
+      DMZSubnet2CIDR:
+        default: DMZ Subnet 2
+      DMZSubnet3CIDR:
+        default: DMZ Subnet 3
 Parameters:
   VPCID:
     Description: VPCStack VPC ID
@@ -118,6 +127,24 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
     Default: 10.97.144.0/24
     Description: CIDR block for DB Subnet 3 located in Availability Zone 3
+    Type: String
+  DMZSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.0.0/24
+    Description: CIDR block for DMZ Subnet 1 located in Availability Zone 1
+    Type: String
+  DMZSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.64.0/24
+    Description: CIDR block for DMZ Subnet 2 located in Availability Zone 2
+    Type: String
+  DMZSubnet3CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.97.128.0/24
+    Description: CIDR block for DMZ Subnet 3 located in Availability Zone 3
     Type: String
 Resources:
   EdgeSubnet1:
@@ -252,6 +279,39 @@ Resources:
       Tags:
       - Key: Name
         Value: adminip-dev-srvdb-t-3-pri-net
+  DMZSubnet1:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'DMZSubnet1CIDR'
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-dmz-t-1-pub-net
+  DMZSubnet2:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'DMZSubnet2CIDR'
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-dmz-t-2-pub-net
+  DMZSubnet3:
+    Type: AWS::EC2::Subnet
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref 'VPCID'
+      CidrBlock: !Ref 'DMZSubnet3CIDR'
+      AvailabilityZone: !Select [ 2, !GetAZs ]
+      Tags:
+      - Key: Name
+        Value: adminip-dev-dmz-t-3-ppub-net
 Outputs:
   EdgeSubnet1ID:
     Value: !Ref EdgeSubnet1
@@ -283,6 +343,21 @@ Outputs:
     Description: OAM Subnet 3 ID
     Export:
       Name: !Sub "${AWS::StackName}-OAMSubnet3"
+  OAMSubnet1CIDR:
+    Value: !Ref OAMSubnet1CIDR
+    Description: OAM Subnet 1 CIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMSubnet1CIDR"
+  OAMSubnet2CIDR:
+    Value: !Ref OAMSubnet2CIDR
+    Description: OAM Subnet 2 CIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMSubnet2CIDR"
+  OAMSubnet3CIDR:
+    Value: !Ref OAMSubnet3CIDR
+    Description: OAM Subnet 3 CIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-OAMSubnet3CIDR"
   AppSubnet1ID:
     Value: !Ref AppSubnet1
     Description: App Subnet 1 ID
@@ -313,3 +388,18 @@ Outputs:
     Description: DB Subnet 3 ID
     Export:
       Name: !Sub "${AWS::StackName}-DBSubnet3"
+  DMZSubnet1ID:
+    Value: !Ref DMZSubnet1
+    Description: DMZ Subnet 1 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZSubnet1"
+  DMZSubnet2ID:
+    Value: !Ref DMZSubnet2
+    Description: DMZ Subnet 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZSubnet2"
+  DMZSubnet3ID:
+    Value: !Ref DMZSubnet3
+    Description: DMZ Subnet 3 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZSubnet3"

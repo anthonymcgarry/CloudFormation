@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Network Stack for Transit Gateway
+Resources:
+  Tgw20300:
+    Type: AWS::EC2::TransitGateway
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      AmazonSideAsn: 4200020300
+      AutoAcceptSharedAttachments: "disable"
+      DefaultRouteTableAssociation: "disable"
+      DefaultRouteTablePropagation: "disable"
+      Description: "Primary transit gateway"
+      DnsSupport: "enable"
+      VpnEcmpSupport: "enable"
+      Tags:
+      - Key: Name
+        Value: adminip-dev-euw1-asn20300-tgw
+  Tgw20300Att01:
+    Type: AWS::EC2::TransitGatewayAttachment
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      SubnetIds:
+        - "arn:aws:ec2:eu-west-1:486319030331:subnet/subnet-0d51c2df0b4d794ee"
+        - "arn:aws:ec2:eu-west-1:486319030331:subnet/subnet-0daeaa8543d519e6b"
+        - "arn:aws:ec2:eu-west-1:486319030331:subnet/subnet-0629fe7b5c8b4f256"
+      TransitGatewayId: !Ref Tgw20300
+      VpcId: "vpc-043622c272cc02452"
+      Tags:
+      - Key: Name
+        Value: adminip-dev-vpc-ip-att
+  Tgw20300Rtb01:
+    Type: AWS::EC2::TransitGatewayRouteTable
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      TransitGatewayId: !Ref Tgw20300
+      Tags:
+      - Key: Name
+        Value: adminip-dev-vpc-rtb
+  Tgw20300Rtb01Assoc:
+    Type: AWS::EC2::TransitGatewayRouteTableAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      TransitGatewayAttachmentId: !Ref Tgw20300Att01
+      TransitGatewayRouteTableId: !Ref Tgw20300Rtb01
+#  Tgw20300Rtb01Prop:
+#    Type: AWS::EC2::TransitGatewayRouteTablePropagation
+#    Properties:
+#      TransitGatewayAttachmentId: !Ref # attachment where routes are propagatig from
+#      TransitGatewayRouteTableId: !Ref TGW00Rtb01
+#  TGW00Rtb01Route01:
+#    Type: 'AWS::EC2::TransitGatewayRoute'
+#    Properties:
+#      DestinationCidrBlock: !Ref TGW00Route01
+#      TransitGatewayAttachmentId: !Ref TGW00Rtb01
+#      TransitGatewayRouteTableId: !Ref TGW00

@@ -40,6 +40,15 @@ Parameters:
   DBSubnet3ID:
     Description: DB Subnet 3 ID
     Type: String
+  DMZSubnet1ID:
+    Description: DMZ Subnet 1 ID
+    Type: String
+  DMZSubnet2ID:
+    Description: DMZ Subnet 2 ID
+    Type: String
+  DMZSubnet3ID:
+    Description: DMZ Subnet 3 ID
+    Type: String
 Resources:
   EdgeNetworkAcl:
     Type: AWS::EC2::NetworkAcl
@@ -249,6 +258,58 @@ Resources:
     Properties:
       SubnetId: !Ref 'DBSubnet3ID'
       NetworkAclId: !Ref 'DBNetworkAcl'
+  DMZNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: adminip-dev-dmzsubnets-nacl
+  DMZNetworkAclIn100:
+    Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: false
+      NetworkAclId: !Ref 'DMZNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  DMZNetworkAclOut100:
+    Type: AWS::EC2::NetworkAclEntry
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      CidrBlock: '0.0.0.0/0'
+      Egress: true
+      NetworkAclId: !Ref 'DMZNetworkAcl'
+      Protocol: -1
+      RuleAction: allow
+      RuleNumber: 100
+  DMZNetworkAclAssoc01:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      SubnetId: !Ref 'DMZSubnet1ID'
+      NetworkAclId: !Ref 'DMZNetworkAcl'
+  DMZNetworkAclAssoc02:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      SubnetId: !Ref 'DMZSubnet2ID'
+      NetworkAclId: !Ref 'DMZNetworkAcl'
+  DMZNetworkAclAssoc03:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      SubnetId: !Ref 'DMZSubnet3ID'
+      NetworkAclId: !Ref 'DMZNetworkAcl'
 Outputs:
   EdgeNetworkAclID:
     Value: !Ref EdgeNetworkAcl
@@ -270,3 +331,8 @@ Outputs:
     Description: DB NACL ID
     Export:
       Name: !Sub "${AWS::StackName}-DBNetworkAcl"
+  DMZNetworkAclID:
+    Value: !Ref DMZNetworkAcl
+    Description: DMZ NACL ID
+    Export:
+      Name: !Sub "${AWS::StackName}-DMZNetworkAcl"
