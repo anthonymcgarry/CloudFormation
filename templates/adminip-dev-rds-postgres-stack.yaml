@@ -1,84 +1,261 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Create ec2 instance for development purposes
 Parameters:
-  DBInstanceIdentifier:
+  NetworkStack:
+    Description: Name of the network stack to VPC ID
     Type: String
-    Default: "dev-instance"
-  DBEngine:
+    Default: 'adminip-dev-ec2-net-rstack'
+  FargateAWXStack:
+    Description: Name of the Fargate AWX stack
     Type: String
-    Default: "postgres"
-  DBEngineVersion:
+    Default: 'adminip-dev-fargate-awx-stack'
+  FargatePgAdminStack:
+    Description: Name of the Fargate PgAdmin stack
     Type: String
-    Default: "10.7"
-  DBInstanceClass:
+    Default: 'adminip-dev-fargate-pgadmin-stack'
+  InstanceIdentifier:
     Type: String
-    Default: "db.t3.small"
-  DBStorageType:
+    Default: 'dev-instance'
+  Engine:
     Type: String
-    Default: "gp2"
-  DBAllocatedStorage:
+    Default: 'postgres'
+  EngineVersion:
+    Type: String
+    Default: '10.11'
+  InstanceClass:
+    Type: String
+    Default: 'db.t3.small'
+  StorageType:
+    Type: String
+    Default: 'gp2'
+  AllocatedStorage:
     Type: Number
     Default: 10
-  DBName:
+  RdsName:
     Type: String
-    Default: "{{resolve:ssm:adminip-dev-rds-dbname-param:1}}"
-  DBUser:
+    Default: '{{resolve:ssm:adminip-dev-rds-dbname-param:1}}'
+  MasterUser:
     Type: String
-    Default: "{{resolve:ssm:adminip-dev-rds-dbusername-param:1}}"
-  DBPassword:
+    Default: '{{resolve:ssm:adminip-dev-rds-dbusername-param:1}}'
+  MasterPassword:
     Type: String
-    Default: "{{resolve:ssm-secure:adminip-dev-rds-masterpassword-param:1}}"
+    Default: '{{resolve:ssm-secure:adminip-dev-rds-masterpassword-param:1}}'
     NoEcho: True
+  BackupRetentionPeriod:
+    Description: The number of days during which automatic DB snapshots are retained.
+      Setting 0 disables automatic snapshots, maximum value is 35. Only applicable
+      if DatabaseEndpoint is blank
+    Type: Number
+    Default: 35
+    MinValue: 0
+    MaxValue: 35
+  CopyTagsToSnapshot:
+    Description: Indicates whether to copy all of the user-defined tags from the DB
+      instance to snapshots of the DB instance. Only applicable if DatabaseEndpoint
+      is blank
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  MonitoringInterval:
+    Description: The interval, in seconds, between points when Enhanced Monitoring
+      metrics are collected for the DB instance. Only applicable if DatabaseEndpoint
+      is blank
+    Type: String
+    Default: '10'
+    AllowedValues:
+      - '0'
+      - '1'
+      - '5'
+      - '10'
+      - '15'
+      - '30'
+      - '60'
+  MultiAZ:
+    Description: Specifies if the database instance is a multiple Availability Zone
+      deployment.
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  NumberOfAvailabilityZones:
+    Description: Quantity of subnets to use, if selecting more than 2 the region this
+      stack is in must have at least that many Availability Zones.
+    Type: String
+    Default: '2'
+    AllowedValues:
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+  PortNumber:
+    Description: The port number for the database server to listen on
+    Type: Number
+    Default: 5432
+    MinValue: 1150
+    MaxValue: 65535
+  PreferredBackupWindow:
+    Description: The daily time range in UTC during which automated backups are created
+      (if automated backups are enabled). Cannot overlap with PreferredMaintenanceWindowTime.
+    Type: String
+    Default: '05:00-07:00'
+    AllowedValues:
+      - '00:00-02:00'
+      - '01:00-03:00'
+      - '02:00-04:00'
+      - '03:00-05:00'
+      - '04:00-06:00'
+      - '05:00-07:00'
+      - '06:00-08:00'
+      - '07:00-09:00'
+      - '08:00-10:00'
+      - '09:00-11:00'
+      - '10:00-12:00'
+      - '11:00-13:00'
+      - '12:00-14:00'
+      - '13:00-15:00'
+      - '14:00-16:00'
+      - '15:00-17:00'
+      - '16:00-18:00'
+      - '17:00-19:00'
+      - '18:00-20:00'
+      - '19:00-21:00'
+      - '20:00-22:00'
+      - '21:00-23:00'
+      - '22:00-24:00'
+  PreferredMaintenanceWindowDay:
+    Description: The day of the week which RDS maintenance will be performed.
+    Type: String
+    Default: 'Sun'
+    AllowedValues:
+      - 'Mon'
+      - 'Tue'
+      - 'Wed'
+      - 'Thu'
+      - 'Fri'
+      - 'Sat'
+      - 'Sun'
+  PreferredMaintenanceWindowStartTime:
+    Description: The weekly start time in UTC for the RDS maintenance window, must
+      be less than PreferredMaintenanceWindowEndTime and cannot overlap with PreferredBackupWindow.
+    Type: String
+    Default: '07:00'
+    AllowedValues:
+      - '00:00'
+      - '01:00'
+      - '02:00'
+      - '03:00'
+      - '04:00'
+      - '05:00'
+      - '06:00'
+      - '07:00'
+      - '08:00'
+      - '09:00'
+  PreferredMaintenanceWindowEndTime:
+    Description: The weekly end time in UTC for the RDS maintenance window, must be
+      more than PreferredMaintenanceWindowEndTime and cannot overlap with PreferredBackupWindow.
+    Type: String
+    Default: '08:00'
+    AllowedValues:
+      - '00:00'
+      - '01:00'
+      - '02:00'
+      - '03:00'
+      - '04:00'
+      - '05:00'
+      - '06:00'
+      - '07:00'
+      - '08:00'
+      - '09:00'
+  PubliclyAccessible:
+    Description: Indicates whether the DB instance is an Internet-facing instance.
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  StorageEncrypted:
+    Description: Indicates whether the DB instance is encrypted.
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  StorageType:
+    Description: Specifies the storage type to be associated with the DB instance.
+    Type: String
+    Default: 'gp2'
+    AllowedValues:
+      - 'io1'
+      - 'gp2'
+      - 'standard'
+  ServiceName:
+    Type: String
+    # update with the name of the service
+    Default: RdsPostgres
 Resources:
   RdsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      GroupDescription: RDS Postgres Security Group
+      GroupDescription: !Join ['', [!Ref ServiceName, RdsSecurityGroup]]
       GroupName: adminip-dev-rdspostgres-t-sg
-      VpcId: !ImportValue adminip-dev-ec2-net-rstack-VPCStack-QBTM1CHVUEHY-VPCID
+      VpcId:
+        Fn::ImportValue: !Sub '${NetworkStack}-VPCID'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref PortNumber
+          ToPort: !Ref PortNumber
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: !Ref PortNumber
+          ToPort: !Ref PortNumber
+          SourceSecurityGroupId:
+            - Fn::ImportValue: !Sub '${FargatePgadminStack}-PgAdminCtrSg'
       Tags:
       - Key: Name
         Value: adminip-dev-rdspostgres-t-sg
-  RdsSgIngress:
-    Type: 'AWS::EC2::SecurityGroupIngress'
-    Properties:
-      GroupId: !Ref RdsSecurityGroup
-      IpProtocol: tcp
-      FromPort: 5432
-      ToPort: 5432
-      CidrIp: 0.0.0.0/0
-  DBSubnetGroup:
+  RdsSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: DBSubnetGroup for RDS instances
+      DBSubnetGroupDescription: !Join ['', [!Ref ServiceName, RdsSubnetGroup]]
       SubnetIds:
-        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-DBSubnet1
-        - !ImportValue adminip-dev-ec2-net-rstack-SubnetStack-1QP00C16Q8TK6-DBSubnet2
+        - Fn::ImportValue: !Sub '${NetworkStack}-DBSubnet1ID'
+        - Fn::ImportValue: !Sub '${NetworkStack}-DBSubnet2ID'
   MasterInstance:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
     UpdateReplacePolicy: Snapshot
     Properties:
-      MultiAZ: true
-      DBInstanceIdentifier: !Ref DBInstanceIdentifier
-      DBName: !Ref DBName
-      AllocatedStorage: !Ref DBAllocatedStorage
-      DBInstanceClass: !Ref DBInstanceClass
-      StorageType: !Ref DBStorageType
-      Engine: !Ref DBEngine
-      EngineVersion: !Ref DBEngineVersion
-      MasterUsername: !Ref DBUser
-      MasterUserPassword: !Ref DBPassword
-      PubliclyAccessible: False
-      DBSubnetGroupName: !Ref DBSubnetGroup
+      AllocatedStorage: !Ref AllocatedStorage
+      BackupRetentionPeriod: !Ref BackupRetentionPeriod
+      CopyTagsToSnapshot: !Ref CopyTagsToSnapshot
+      DBInstanceClass: !Ref InstanceClass
+      DBInstanceIdentifier: !Ref InstanceIdentifier
+      DBName: !Ref RdsName
+      DBSubnetGroupName: !Ref RdsSubnetGroup
+      Engine: !Ref Engine
+      EngineVersion: !Ref EngineVersion
+      MasterUsername: !Ref MasterUser
+      MasterUserPassword: !Ref MasterPassword
+      MultiAZ: !Ref MultiAZ
+      Port: !Ref PortNumber
+      PreferredBackupWindow: !Ref PreferredBackupWindow
+      PreferredMaintenanceWindow: !Sub '${PreferredMaintenanceWindowDay}:${PreferredMaintenanceWindowStartTime}-${PreferredMaintenanceWindowDay}:${PreferredMaintenanceWindowEndTime}'
+      PubliclyAccessible: !Ref PubliclyAccessible
+      StorageEncrypted: !Ref StorageEncrypted
+      StorageType: !Ref StorageType
       VPCSecurityGroups:
         - !Ref RdsSecurityGroup
       Tags:
       - Key: Name
         Value: adminip-dev-rds-postgres-rds
 Outputs:
-  EndpointMaster:
-    Description: Endpoint of the newly created RDS master
-    Value: MasterInstance
+  RdsMasterEndpoint:
+    Description: Database endpoint
+    Value: !GetAtt MasterInstance.Endpoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-RdsEndpointAddress'
