@@ -268,16 +268,17 @@ Resources:
                 - apt-get -y install build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv python3-pip git
                 - /usr/bin/pip3 install --upgrade pip
                 - /usr/bin/pip3 install -U docker ansible awscli docker-compose
-                - docker-compose --version
                 - $(aws ecr get-login --no-include-email)
                 - set
             build:
               commands:
                 - git checkout $AWX_VERSION
                 - cd installer/
-                #- sed -i "s/^dockerhub_base=ansible//g" inventory
-                #- sed -i "s/^dockerhub_version=latest//g" inventory
-                #- sed -i -e "$ause_container_for_build" inventory
+                # Use the below setting to modify the build version
+                # - sed -i "s/^dockerhub_base=ansible//g" inventory
+                # - sed -i "s/^dockerhub_version=latest//g" inventory
+                # - sed -i -e "$ause_container_for_build" inventory
+                # Specify the ansible python interpreter or ansible will not find docker compose
                 - echo ansible-playbook -i inventory -e ansible_python_interpreter="/usr/bin/python3" -e awx_version="$AWX_VERSION" -e pg_hostname="$pg_hostname" -e pg_username="$pg_username" -e pg_password="$pg_password" -e pg_database="awx" -e pg_port=5432 -e default_admin_user="$awx_username" -e default_admin_password="$awx_password" -e admin_user="$awx_username" -e admin_password="$awx_password" install.yml
                 - ansible-playbook -v -i inventory -e ansible_python_interpreter="/usr/bin/python3" -e awx_version="$AWX_VERSION" -e pg_hostname="$pg_hostname" -e pg_username="$pg_username" -e pg_password="$pg_password" -e pg_database="awx" -e pg_port=5432 -e default_admin_user="$awx_username" -e default_admin_password="$awx_password" -e admin_user="$awx_username" -e admin_password="$awx_password" install.yml
                 # Allow time for the DB Setup Scripts to complete
@@ -287,17 +288,12 @@ Resources:
                 - export REDIS_TAG=$(docker image ls --all | grep redis | awk '{print $2}' | cut -d ':' -f 2)
                 - export REDIS_IMAGE=$(docker image ls --all | grep redis | awk '{print $1}')
                 # Make a Sidecar container to inject created files for mounting
-                - echo $PWD
                 - mkdir -p sidecar/tmp
-                - ls -al ~/.awx/awxcompose
-                - ls -al ~/.awx/awxcompose/redis_socket
                 - buildpath=$PWD
-                - echo $buildpath
                 - cd ~/.awx/
-                - echo $PWD
+                # Use tar to copy the files to the side car and exclude scoket files as docker will fail to build
                 - tar cf - --exclude=awxcompose/redis_socket/* . | (cd $buildpath/sidecar/tmp && tar xvf - )
                 - cd $buildpath
-                - echo $PWD
                 - echo "changes"
                 - echo "FROM ansible/awx:${AWX_VERSION}" > sidecar/Dockerfile
                 - echo "VOLUME /etc/tower/" >> sidecar/Dockerfile
@@ -308,17 +304,15 @@ Resources:
                 - echo "COPY --chown=1000 tmp/awxcompose/nginx.conf /etc/nginx/nginx.conf" >> sidecar/Dockerfile
                 - |
                   echo 'CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"' >> sidecar/Dockerfile
-                - docker container ls --all
-                - docker image ls --all
                 - docker build -t sidecar:${AWX_VERSION} sidecar
                 # Debug info
                 # Contextual info for other debug data
-                - docker container ls --all
-                - docker image ls --all
+                # - docker container ls --all
+                # - docker image ls --all
                 # Full logs of each container
-                #- for i in $(docker ps -q); do docker logs $i; done
+                # - for i in $(docker ps -q); do docker logs $i; done
                 # Docker inspect
-                #- for i in $(docker ps -q); do echo "CONTAINER $i\\n========="; docker inspect $i; echo "========="; done
+                # - for i in $(docker ps -q); do echo "CONTAINER $i\\n========="; docker inspect $i; echo "========="; done
                 # Push containers to their respective repositories
                 - >
                   docker tag ansible/awx:${AWX_VERSION} ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWX_TASK_REPO}:${AWX_VERSION} &&
