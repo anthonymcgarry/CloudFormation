@@ -1,0 +1,414 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create AWX Containers
+Parameters:
+  AWXS3Bucket:
+    Description: S3 Bucket that holds AWX info
+    Type: String
+    Default: "adminip-dev-awx-bucket"
+  S3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/]*$
+    ConstraintDescription: key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slash (/).
+    Default: ""
+    Description: S3 key prefix for assets. key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slash (/).
+    Type: String
+  AWXGitHubRepo:
+    Description: Which github should we use as the source for the build
+    Type: String
+    Default: "https://github.com/ansible/awx.git"
+  AWXVersion:
+    Description: Which version of AWX to use
+    Type: String
+    Default: "13.0.0"
+  DatabaseEndpoint:
+    Description: DNS Name of RDS Postgress DB
+    Type: String
+    Default: "rds.amazom.com"
+  MasterUserPassword:
+    Description: RDS Postgress DB Master password
+    Type: String
+    Default: "password"
+    NoEcho: True
+  MasterUsername:
+    Description: RDS Postgress DB Master user password
+    Type: String
+    Default: "dbadmin"
+  AWXAdminUsername:
+    Description: Default AWX admin username
+    Type: String
+    Default: "awx"
+  AWXAdminPassword:
+    Description: Default AWX admin username
+    Type: String
+    Default: "password"
+    NoEcho: True
+Resources:
+  AWXTaskECRRepository:
+    Type: AWS::ECR::Repository
+  AWXWebECRRepository:
+    Type: AWS::ECR::Repository
+  AWXRedisECRRepository:
+    Type: AWS::ECR::Repository
+  SidecarECRRepository:
+    Type: AWS::ECR::Repository
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+      Policies:
+        - PolicyName: ecs-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Resource:
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*'
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*:*'
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:DescribeLogStreams
+              - Effect: Allow
+                Resource:
+                  - !Sub 'arn:aws:s3:::${AWXS3Bucket}/scripts/dummy.zip'
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+              - Effect: Allow
+                Resource:
+                  - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${AWXRedisECRRepository}'
+                  - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${AWXTaskECRRepository}'
+                  - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${AWXWebECRRepository}'
+                  - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${SidecarECRRepository}'
+                Action:
+                  - ecr:DescribeImages
+                  - ecr:ListImages
+                  - ecr:PutImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:GetRepositoryPolicy
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+              - Effect: Allow
+                Resource: "*"
+                Action:
+                  - ecr:GetAuthorizationToken
+  CopyZips:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt 'CopyZipsFunction.Arn'
+      DestBucket: !Ref 'LambdaZipsBucket'
+      SourceBucket: !Ref 'AWXS3Bucket'
+      Prefix: !Ref 'S3KeyPrefix'
+      Objects:
+        - scripts/lambda_codebuild.zip
+  CopyZipsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Path: /
+      Policies:
+        - PolicyName: lambda-copier
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${AWXS3Bucket}/${S3KeyPrefix}*'
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${LambdaZipsBucket}/${S3KeyPrefix}*'
+  LambdaZipsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      Tags: []
+  CopyZipsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Copies objects from a source S3 bucket to a destination
+      Handler: index.handler
+      Runtime: python2.7
+      Role: !GetAtt 'CopyZipsRole.Arn'
+      Timeout: 240
+      Code:
+        ZipFile: !Join
+          - "\n"
+          - - import json
+            - import logging
+            - import threading
+            - import boto3
+            - import cfnresponse
+            - ''
+            - ''
+            - 'def copy_objects(source_bucket, dest_bucket, prefix, objects):'
+            - '    s3 = boto3.client(''s3'')'
+            - '    for o in objects:'
+            - '        key = prefix + o'
+            - '        copy_source = {'
+            - '            ''Bucket'': source_bucket,'
+            - '            ''Key'': key'
+            - '        }'
+            - '        print(''copy_source: %s'' % copy_source)'
+            - '        print(''dest_bucket = %s''%dest_bucket)'
+            - '        print(''key = %s'' %key)'
+            - '        s3.copy_object(CopySource=copy_source, Bucket=dest_bucket,
+              Key=key)'
+            - ''
+            - ''
+            - 'def delete_objects(bucket, prefix, objects):'
+            - '    s3 = boto3.client(''s3'')'
+            - '    objects = {''Objects'': [{''Key'': prefix + o} for o in objects]}'
+            - '    s3.delete_objects(Bucket=bucket, Delete=objects)'
+            - ''
+            - ''
+            - 'def timeout(event, context):'
+            - '    logging.error(''Execution is about to time out, sending failure
+              response to CloudFormation'')'
+            - '    cfnresponse.send(event, context, cfnresponse.FAILED, {}, None)'
+            - ''
+            - ''
+            - 'def handler(event, context):'
+            - '    # make sure we send a failure to CloudFormation if the function
+              is going to timeout'
+            - '    timer = threading.Timer((context.get_remaining_time_in_millis()
+              / 1000.00) - 0.5, timeout, args=[event, context])'
+            - '    timer.start()'
+            - ''
+            - '    print(''Received event: %s'' % json.dumps(event))'
+            - '    status = cfnresponse.SUCCESS'
+            - '    try:'
+            - '        source_bucket = event[''ResourceProperties''][''SourceBucket'']'
+            - '        dest_bucket = event[''ResourceProperties''][''DestBucket'']'
+            - '        prefix = event[''ResourceProperties''][''Prefix'']'
+            - '        objects = event[''ResourceProperties''][''Objects'']'
+            - '        if event[''RequestType''] == ''Delete'':'
+            - '            delete_objects(dest_bucket, prefix, objects)'
+            - '        else:'
+            - '            copy_objects(source_bucket, dest_bucket, prefix, objects)'
+            - '    except Exception as e:'
+            - '        logging.error(''Exception: %s'' % e, exc_info=True)'
+            - '        status = cfnresponse.FAILED'
+            - '    finally:'
+            - '        timer.cancel()'
+            - '        cfnresponse.send(event, context, status, {}, None)'
+            - ''
+  AWXCodeBuildProject:
+    DependsOn: [ CopyZips ]
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub 'awx-build-${AWS::StackName}'
+      Description: Builds the AWX container images to ECR
+      ServiceRole: !GetAtt 'CodeBuildRole.Arn'
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+        PrivilegedMode: True
+        EnvironmentVariables:
+          - Name: AWX_TASK_REPO
+            Value: !Ref AWXTaskECRRepository
+          - Name: AWX_WEB_REPO
+            Value: !Ref AWXWebECRRepository
+          - Name: REDIS_REPO
+            Value: !Ref AWXRedisECRRepository
+          - Name: SIDECAR_REPO
+            Value: !Ref SidecarECRRepository
+          - Name: AWX_VERSION
+            Value: !Ref AWXVersion
+          - Name: pg_hostname
+            Value: !Ref DatabaseEndpoint
+          - Name: pg_password
+            Value: !Ref MasterUserPassword
+          - Name: pg_username
+            Value: !Ref MasterUsername
+          - Name: awx_username
+            Value: !Ref AWXAdminUsername
+          - Name: awx_password
+            Value: !Ref AWXAdminPassword
+      Source:
+        Location:
+          !Join
+            - '#'
+            - - !Ref AWXGitHubRepo
+              - !Ref AWXVersion
+        Type: GITHUB
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              Runtime-versions:
+                docker: 19
+              commands:
+                - apt-get -y update
+                - apt-get -y install build-essential libssl-dev libffi-dev python-dev python3-dev python3-venv python3-pip git
+                - /usr/bin/pip3 install --upgrade pip
+                - /usr/bin/pip3 install -U docker ansible awscli docker-compose
+                - $(aws ecr get-login --no-include-email)
+                - set
+            build:
+              commands:
+                - git checkout $AWX_VERSION
+                - cd installer/
+                # Use the below setting to modify the build version
+                # - sed -i "s/^dockerhub_base=ansible//g" inventory
+                # - sed -i "s/^dockerhub_version=latest//g" inventory
+                # - sed -i -e "$ause_container_for_build" inventory
+                # Specify the ansible python interpreter or ansible will not find docker compose
+                - echo ansible-playbook -i inventory -e ansible_python_interpreter="/usr/bin/python3" -e awx_version="$AWX_VERSION" -e pg_hostname="$pg_hostname" -e pg_username="$pg_username" -e pg_password="$pg_password" -e pg_database="awx" -e pg_port=5432 -e default_admin_user="$awx_username" -e default_admin_password="$awx_password" -e admin_user="$awx_username" -e admin_password="$awx_password" install.yml
+                - ansible-playbook -v -i inventory -e ansible_python_interpreter="/usr/bin/python3" -e awx_version="$AWX_VERSION" -e pg_hostname="$pg_hostname" -e pg_username="$pg_username" -e pg_password="$pg_password" -e pg_database="awx" -e pg_port=5432 -e default_admin_user="$awx_username" -e default_admin_password="$awx_password" -e admin_user="$awx_username" -e admin_password="$awx_password" install.yml
+                # Allow time for the DB Setup Scripts to complete
+                - sleep 240
+                # Get container tagging info
+                - export ACCOUNT_ID=$(echo ${CODEBUILD_BUILD_ARN} | awk -F':' '{print $5}')
+                - export REDIS_TAG=$(docker image ls --all | grep redis | awk '{print $2}' | cut -d ':' -f 2)
+                - export REDIS_IMAGE=$(docker image ls --all | grep redis | awk '{print $1}')
+                # Make a Sidecar container to inject created files for mounting
+                - mkdir -p sidecar/tmp
+                - buildpath=$PWD
+                - cd ~/.awx/
+                # Use tar to copy the files to the side car and exclude scoket files as docker will fail to build
+                - tar cf - --exclude=awxcompose/redis_socket/* . | (cd $buildpath/sidecar/tmp && tar xvf - )
+                - cd $buildpath
+                - echo "changes"
+                - echo "FROM ansible/awx:${AWX_VERSION}" > sidecar/Dockerfile
+                - echo "VOLUME /etc/tower/" >> sidecar/Dockerfile
+                - echo "VOLUME /etc/nginx/" >> sidecar/Dockerfile
+                - echo "COPY --chown=1000 tmp/awxcompose/credentials.py /etc/tower/conf.d/credentials.py" >> sidecar/Dockerfile
+                - echo "COPY --chown=1000 tmp/awxcompose/SECRET_KEY /etc/tower/SECRET_KEY" >> sidecar/Dockerfile
+                - echo "COPY --chown=1000 tmp/awxcompose/environment.sh /etc/tower/conf.d/environment.sh" >> sidecar/Dockerfile
+                - echo "COPY --chown=1000 tmp/awxcompose/nginx.conf /etc/nginx/nginx.conf" >> sidecar/Dockerfile
+                - |
+                  echo 'CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"' >> sidecar/Dockerfile
+                - docker build -t sidecar:${AWX_VERSION} sidecar
+                # Debug info
+                # Contextual info for other debug data
+                # - docker container ls --all
+                # - docker image ls --all
+                # Full logs of each container
+                # - for i in $(docker ps -q); do docker logs $i; done
+                # Docker inspect
+                # - for i in $(docker ps -q); do echo "CONTAINER $i\\n========="; docker inspect $i; echo "========="; done
+                # Push containers to their respective repositories
+                - >
+                  docker tag ansible/awx:${AWX_VERSION} ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWX_TASK_REPO}:${AWX_VERSION} &&
+                  docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWX_TASK_REPO}:${AWX_VERSION}
+                - >
+                  docker tag ansible/awx:${AWX_VERSION} ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWX_WEB_REPO}:${AWX_VERSION} &&
+                  docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWX_WEB_REPO}:${AWX_VERSION}
+                - >
+                  docker tag ${REDIS_IMAGE}:${REDIS_TAG} ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REDIS_REPO}:${AWX_VERSION} &&
+                  docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REDIS_REPO}:${AWX_VERSION}
+                - >
+                  docker tag sidecar:${AWX_VERSION} ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SIDECAR_REPO}:${AWX_VERSION} &&
+                  docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SIDECAR_REPO}:${AWX_VERSION}
+            post_build:
+              commands:
+                # FIXME: Need to trap and only execute this if the Build is passing.
+                - echo "Signal back if we have gotten this far"
+                # FIXME: Wanted to add a UUID but then I have an issue with storing these somewhere.
+                - export UUID=1233244324
+                - |
+                  if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]
+                  then
+                    curl -X PUT -H 'Content-Type:' -d "{\"StackId\":\"$cfn_stack_id\", \"RequestId\":\"$cfn_request_id\", \"LogicalResourceId\":\"$cfn_logical_resource_id\", \"PhysicalResourceId\":\"$UUID\", \"Status\":\"SUCCESS\"}" "$cfn_signal_url"
+                  else
+                    # Add Reason here and test.
+                    curl -X PUT -H 'Content-Type:' -d "{\"StackId\":\"$cfn_stack_id\", \"RequestId\":\"$cfn_request_id\", \"LogicalResourceId\":\"$cfn_logical_resource_id\", \"PhysicalResourceId\":\"$UUID\", \"Status\":\"FAILED\"}" "$cfn_signal_url"
+                  fi
+      # FIXME: get this close to the actual time things take with 5 minute margin added for safety
+      TimeoutInMinutes: 60
+  BuildContainers:
+    Type: Custom::BuildContainers
+    Properties:
+      # Different version cause a rebuild.
+      UpdateMe: !Ref AWXVersion
+      ServiceToken: !GetAtt BuildContainersLambda.Arn
+      BuildProjectName: !Ref AWXCodeBuildProject
+      # Logging
+      loglevel: 'debug'
+      # For deletion of the container images.
+      AWXTaskECRRepository: !Ref AWXTaskECRRepository
+      AWXWebECRRepository: !Ref AWXWebECRRepository
+      AWXRedisECRRepository: !Ref  AWXRedisECRRepository
+      SidecarECRRepository: !Ref  SidecarECRRepository
+      # Lambda function passes the above into the build project when invoking StartBuild
+  BuildContainersLambda:
+    DependsOn: [ CopyZips ]
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref LambdaZipsBucket
+        S3Key:
+          Fn::Join:
+            - ""
+            - - !Ref S3KeyPrefix
+              - "scripts/lambda_codebuild.zip"
+      Handler: !Sub lambda_codebuild.lambda_handler
+      Runtime: python3.6
+      Timeout: 300
+      Role: !GetAtt BuildContainersLambdaExecutionRole.Arn
+  BuildContainersLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - codebuild:StartBuild
+            Resource: !GetAtt AWXCodeBuildProject.Arn
+          - Effect: Allow
+            Resource:
+              - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${AWXRedisECRRepository}'
+              - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${AWXTaskECRRepository}'
+              - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${AWXWebECRRepository}'
+              - !Sub 'arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${SidecarECRRepository}'
+            Action:
+              - ecr:DescribeImages
+              - ecr:ListImages
+              - ecr:BatchGetImage
+              - ecr:BatchDeleteImage
+          - Effect: Allow
+            Resource:
+              - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
