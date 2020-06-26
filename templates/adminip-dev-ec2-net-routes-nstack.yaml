@@ -7,8 +7,11 @@ Parameters:
   OAMRouteTable2ID:
     Description: OAM Route Table 2 ID
     Type: String
-  OAMRouteTable3ID:
-    Description: OAM Route Table 3 ID
+  AppRouteTable1ID:
+    Description: App Route Table 1 ID
+    Type: String
+  AppRouteTable2ID:
+    Description: App Route Table 2 ID
     Type: String
   DMZRouteTable1ID:
     Description: DMZ Route Table 1 ID
@@ -16,55 +19,67 @@ Parameters:
   DMZRouteTable2ID:
     Description: DMZ Route Table 2 ID
     Type: String
-  DMZRouteTable3ID:
-    Description: DMZ Route Table 3 ID
-    Type: String
+#  DMZRouteTable3ID:
+#    Description: DMZ Route Table 3 ID
+#    Type: String
   InternetGatewayID:
     Description: Internet Gateway ID
     Type: String
-  NatGateway01ID:
+  NatGateway1ID:
     Description: NAT Gateway 1 ID
     Type: String
-#  NatGateway02ID:
-#    Description: NAT Gateway 2 ID
-#    Type: String
-#  NatGateway03ID:
+  NatGateway2ID:
+    Description: NAT Gateway 2 ID
+    Type: String
+#  NatGateway3ID:
 #    Description: NAT Gateway 3 ID
 #    Type: String
 Resources:
-  DMZDefaultRoute01:
+  DMZDefaultRoute1:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref DMZRouteTable1ID
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGatewayID
-  DMZDefaultRoute02:
+  DMZDefaultRoute2:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref DMZRouteTable2ID
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGatewayID
-  DMZDefaultRoute03:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref DMZRouteTable3ID
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGatewayID
-  OAMDefaultRoute01:
+#  DMZDefaultRoute3:
+#    Type: AWS::EC2::Route
+#    Properties:
+#      RouteTableId: !Ref DMZRouteTable3ID
+#      DestinationCidrBlock: 0.0.0.0/0
+#      GatewayId: !Ref InternetGatewayID
+  OAMDefaultRoute1:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref OAMRouteTable1ID
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway01ID
-#  OAMDefaultRoute02:
-#    Type: AWS::EC2::Route
-#    Properties:
-#      RouteTableId: !Ref OAMRouteTable2ID
-#      DestinationCidrBlock: 0.0.0.0/0
-#      NatGatewayId: !Ref NatGateway02ID
-#  OAMDefaultRoute03:
+      NatGatewayId: !Ref NatGateway1ID
+  OAMDefaultRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref OAMRouteTable2ID
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2ID
+#  OAMDefaultRoute3:
 #    Type: AWS::EC2::Route
 #    Properties:
 #      RouteTableId: !Ref OAMRouteTable3ID
 #      DestinationCidrBlock: 0.0.0.0/0
-#      NatGatewayId: !Ref NatGateway03ID
+#      NatGatewayId: !Ref NatGateway3ID
+  AppDefaultRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable1ID
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1ID
+  AppDefaultRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTable2ID
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2ID
