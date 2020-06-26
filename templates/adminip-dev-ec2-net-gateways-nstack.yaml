@@ -7,9 +7,9 @@ Parameters:
   DMZSubnet1ID:
     Description: DMZ Subnet 1 ID
     Type: String
-#  DMZSubnet2ID:
-#    Description: DMZ Subnet 2 ID
-#    Type: String
+  DMZSubnet2ID:
+    Description: DMZ Subnet 2 ID
+    Type: String
 #  DMZSubnet3ID:
 #    Description: DMZ Subnet 3 ID
 #    Type: String
@@ -25,35 +25,35 @@ Resources:
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref VPCID
-  NatGatewayEip01:
+  NatGatewayEip1:
     Type: AWS::EC2::EIP
     DependsOn: InternetGatewayAtt
     Properties:
       Domain: vpc
-  NatGateway01:
+  NatGateway1:
     Type: AWS::EC2::NatGateway
     Properties:
-      AllocationId: !GetAtt NatGatewayEip01.AllocationId
+      AllocationId: !GetAtt NatGatewayEip1.AllocationId
       SubnetId: !Ref DMZSubnet1ID
-#  NatGatewayEip02:
+  NatGatewayEip2:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAtt
+    Properties:
+      Domain: vpc
+  NatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEip2.AllocationId
+      SubnetId: !Ref DMZSubnet2ID
+#  NatGatewayEip3:
 #    Type: AWS::EC2::EIP
 #    DependsOn: InternetGatewayAtt
 #    Properties:
 #      Domain: vpc
-#  NatGateway02:
+#  NatGateway3:
 #    Type: AWS::EC2::NatGateway
 #    Properties:
-#      AllocationId: !GetAtt NatGatewayEip02.AllocationId
-#      SubnetId: !Ref DMZSubnet2ID
-#  NatGatewayEip03:
-#    Type: AWS::EC2::EIP
-#    DependsOn: InternetGatewayAtt
-#    Properties:
-#      Domain: vpc
-#  NatGateway03:
-#    Type: AWS::EC2::NatGateway
-#    Properties:
-#      AllocationId: !GetAtt NatGatewayEip03.AllocationId
+#      AllocationId: !GetAtt NatGatewayEip3.AllocationId
 #      SubnetId: !Ref DMZSubnet3ID
 Outputs:
   InternetGatewayID:
@@ -61,18 +61,18 @@ Outputs:
     Description: Internet Gateway ID
     Export:
       Name: !Sub "${AWS::StackName}-InternetGateway"
-  NatGateway01ID:
-    Value: !Ref NatGateway01
+  NatGateway1ID:
+    Value: !Ref NatGateway1
     Description: Nat Gateway 1 ID
     Export:
-      Name: !Sub "${AWS::StackName}-NatGateway01"
-#  NatGateway02ID:
-#    Value: !Ref NatGateway02
-#    Description: Nat Gateway 2 ID
-#    Export:
-#      Name: !Sub "${AWS::StackName}-NatGateway02"
-#  NatGateway03ID:
-#    Value: !Ref NatGateway03
+      Name: !Sub "${AWS::StackName}-NatGateway1"
+  NatGateway2ID:
+    Value: !Ref NatGateway2
+    Description: Nat Gateway 2 ID
+    Export:
+      Name: !Sub "${AWS::StackName}-NatGateway2"
+#  NatGateway3ID:
+#    Value: !Ref NatGateway3
 #    Description: Nat Gateway 3 ID
 #    Export:
-#      Name: !Sub "${AWS::StackName}-NatGateway03"
+#      Name: !Sub "${AWS::StackName}-NatGateway3"
